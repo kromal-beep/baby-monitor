@@ -80,7 +80,7 @@
 
         // === KONFIGURACJA SUPABASE ===
         const SUPABASE_URL = 'https://jkxwqhmsayfjgaisewzr.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_mnc22clh7MV7gbH8WXCWPQ_t7Q42aW6';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpreHdxaG1zYXlmamdhaXNld3pyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4MjM5NDcsImV4cCI6MjA1MTM5OTk0N30.sb_publishable_mnc22clh7MV7gbH8WXCWPQ_t7Q42aW6';
 
         // Inicjalizacja Supabase
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -389,13 +389,13 @@
 
             const getTypeColor = (type) => {
                 switch(type) {
-                    case 'feeding': return '#a8d5ba';
-                    case 'poop': return '#d4a574';
-                    case 'pee': return '#7fb3d5';
-                    case 'both': return '#9fa8da';
-                    case 'vitamin_d': return '#ffd93d';
-                    case 'probiotic': return '#9de0ad';
-                    default: return '#e0e0e0';
+                    case 'feeding': return '#666';
+                    case 'poop': return '#666';
+                    case 'pee': return '#666';
+                    case 'both': return '#666';
+                    case 'vitamin_d': return '#666';
+                    case 'probiotic': return '#666';
+                    default: return '#999';
                 }
             };
 
@@ -404,7 +404,7 @@
                 return (
                     <div style={{
                         minHeight: '100vh',
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        background: '#f5f5f5',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -417,7 +417,7 @@
                             padding: '48px',
                             maxWidth: '400px',
                             width: '100%',
-                            boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+                            boxShadow: '0 20px 60px rgba(0,0,0,0.1)'
                         }}>
                             <div style={{
                                 textAlign: 'center',
@@ -426,7 +426,7 @@
                                 <div style={{ fontSize: '64px', marginBottom: '16px' }}>👶</div>
                                 <h1 style={{ 
                                     margin: '0 0 8px 0', 
-                                    color: '#667eea',
+                                    color: '#333',
                                     fontSize: '32px',
                                     fontWeight: 'bold'
                                 }}>
@@ -466,7 +466,7 @@
                                             boxSizing: 'border-box',
                                             transition: 'border-color 0.3s'
                                         }}
-                                        onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                                        onFocus={(e) => e.target.style.borderColor = '#666'}
                                         onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
                                     />
                                 </div>
@@ -495,20 +495,21 @@
                                             boxSizing: 'border-box',
                                             transition: 'border-color 0.3s'
                                         }}
-                                        onFocus={(e) => e.target.style.borderColor = '#667eea'}
+                                        onFocus={(e) => e.target.style.borderColor = '#666'}
                                         onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
                                     />
                                 </div>
                                 
                                 {loginError && (
                                     <div style={{
-                                        background: '#fee',
-                                        color: '#c33',
+                                        background: '#f5f5f5',
+                                        color: '#666',
                                         padding: '12px',
                                         borderRadius: '8px',
                                         marginBottom: '20px',
                                         fontSize: '14px',
-                                        textAlign: 'center'
+                                        textAlign: 'center',
+                                        border: '1px solid #ddd'
                                     }}>
                                         {loginError}
                                     </div>
@@ -519,7 +520,7 @@
                                     style={{
                                         width: '100%',
                                         padding: '16px',
-                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        background: '#000',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '12px',
@@ -528,15 +529,15 @@
                                         cursor: 'pointer',
                                         fontFamily: 'inherit',
                                         transition: 'transform 0.2s, box-shadow 0.2s',
-                                        boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
+                                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
                                     }}
                                     onMouseEnter={(e) => {
                                         e.target.style.transform = 'translateY(-2px)';
-                                        e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.5)';
+                                        e.target.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
                                     }}
                                     onMouseLeave={(e) => {
                                         e.target.style.transform = 'translateY(0)';
-                                        e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+                                        e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
                                     }}
                                 >
                                     Zaloguj się
@@ -551,7 +552,7 @@
             return (
                 <div style={{
                     minHeight: '100vh',
-                    background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                    background: '#f5f5f5',
                     fontFamily: '"Quicksand", "Comic Sans MS", cursive',
                     padding: '20px'
                 }}>
@@ -573,7 +574,7 @@
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ fontSize: '36px' }}>👶</div>
-                                <h1 style={{ margin: 0, color: '#ff6b6b', fontSize: '28px' }}>
+                                <h1 style={{ margin: 0, color: '#333', fontSize: '28px' }}>
                                     Baby Monitor
                                 </h1>
                             </div>
@@ -582,8 +583,8 @@
                                 onClick={handleLogout}
                                 style={{
                                     padding: '10px 20px',
-                                    background: '#f0f0f0',
-                                    color: '#666',
+                                    background: '#e0e0e0',
+                                    color: '#333',
                                     border: 'none',
                                     borderRadius: '12px',
                                     cursor: 'pointer',
@@ -611,7 +612,7 @@
                                 style={{
                                     flex: 1,
                                     padding: '12px',
-                                    background: currentView === 'dashboard' ? '#ff6b6b' : 'transparent',
+                                    background: currentView === 'dashboard' ? '#000' : 'transparent',
                                     color: currentView === 'dashboard' ? 'white' : '#666',
                                     border: 'none',
                                     borderRadius: '10px',
@@ -630,7 +631,7 @@
                                 style={{
                                     flex: 1,
                                     padding: '12px',
-                                    background: currentView === 'history' ? '#ff6b6b' : 'transparent',
+                                    background: currentView === 'history' ? '#000' : 'transparent',
                                     color: currentView === 'history' ? 'white' : '#666',
                                     border: 'none',
                                     borderRadius: '10px',
@@ -663,10 +664,10 @@
                                     {/* Vitamin D prompt */}
                                     {showVitaminDPrompt && (
                                         <div style={{
-                                            background: 'linear-gradient(135deg, #ffd93d 0%, #ffb347 100%)',
+                                            background: '#e8e8e8',
                                             borderRadius: '16px',
                                             padding: '20px',
-                                            boxShadow: '0 4px 16px rgba(255, 217, 61, 0.3)',
+                                            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
                                             display: 'flex',
                                             flexDirection: 'column',
                                             gap: '12px',
@@ -676,7 +677,7 @@
                                             <div style={{
                                                 fontSize: '16px',
                                                 fontWeight: 'bold',
-                                                color: '#664d00',
+                                                color: '#333',
                                                 textAlign: 'center'
                                             }}>
                                                 Czy podałeś witaminę D?
@@ -693,7 +694,7 @@
                                                         flex: 1,
                                                         minWidth: '100px',
                                                         padding: '10px 16px',
-                                                        background: '#4caf50',
+                                                        background: '#000',
                                                         color: 'white',
                                                         border: 'none',
                                                         borderRadius: '10px',
@@ -701,16 +702,16 @@
                                                         fontWeight: 'bold',
                                                         cursor: 'pointer',
                                                         fontFamily: 'inherit',
-                                                        boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)',
+                                                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
                                                         transition: 'all 0.2s'
                                                     }}
                                                     onMouseEnter={(e) => {
                                                         e.target.style.transform = 'translateY(-1px)';
-                                                        e.target.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.4)';
+                                                        e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
                                                     }}
                                                     onMouseLeave={(e) => {
                                                         e.target.style.transform = 'translateY(0)';
-                                                        e.target.style.boxShadow = '0 2px 8px rgba(76, 175, 80, 0.3)';
+                                                        e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                                                     }}
                                                 >
                                                     ✓ Tak
@@ -721,9 +722,9 @@
                                                         flex: 1,
                                                         minWidth: '100px',
                                                         padding: '10px 16px',
-                                                        background: 'rgba(255, 255, 255, 0.9)',
-                                                        color: '#664d00',
-                                                        border: '2px solid rgba(255, 255, 255, 0.5)',
+                                                        background: 'white',
+                                                        color: '#333',
+                                                        border: '2px solid #ddd',
                                                         borderRadius: '10px',
                                                         fontSize: '14px',
                                                         fontWeight: 'bold',
@@ -732,10 +733,10 @@
                                                         transition: 'all 0.2s'
                                                     }}
                                                     onMouseEnter={(e) => {
-                                                        e.target.style.background = 'white';
+                                                        e.target.style.background = '#f5f5f5';
                                                     }}
                                                     onMouseLeave={(e) => {
-                                                        e.target.style.background = 'rgba(255, 255, 255, 0.9)';
+                                                        e.target.style.background = 'white';
                                                     }}
                                                 >
                                                     Później
@@ -747,10 +748,10 @@
                                     {/* Probiotic prompt */}
                                     {showProbioticPrompt && (
                                         <div style={{
-                                            background: 'linear-gradient(135deg, #9de0ad 0%, #7bc795 100%)',
+                                            background: '#e8e8e8',
                                             borderRadius: '16px',
                                             padding: '20px',
-                                            boxShadow: '0 4px 16px rgba(157, 224, 173, 0.3)',
+                                            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
                                             display: 'flex',
                                             flexDirection: 'column',
                                             gap: '12px',
@@ -760,7 +761,7 @@
                                             <div style={{
                                                 fontSize: '16px',
                                                 fontWeight: 'bold',
-                                                color: '#2d5f3f',
+                                                color: '#333',
                                                 textAlign: 'center'
                                             }}>
                                                 Czy podałeś dziś probiotyk?
@@ -777,7 +778,7 @@
                                                         flex: 1,
                                                         minWidth: '100px',
                                                         padding: '10px 16px',
-                                                        background: '#4caf50',
+                                                        background: '#000',
                                                         color: 'white',
                                                         border: 'none',
                                                         borderRadius: '10px',
@@ -785,16 +786,16 @@
                                                         fontWeight: 'bold',
                                                         cursor: 'pointer',
                                                         fontFamily: 'inherit',
-                                                        boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)',
+                                                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
                                                         transition: 'all 0.2s'
                                                     }}
                                                     onMouseEnter={(e) => {
                                                         e.target.style.transform = 'translateY(-1px)';
-                                                        e.target.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.4)';
+                                                        e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
                                                     }}
                                                     onMouseLeave={(e) => {
                                                         e.target.style.transform = 'translateY(0)';
-                                                        e.target.style.boxShadow = '0 2px 8px rgba(76, 175, 80, 0.3)';
+                                                        e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
                                                     }}
                                                 >
                                                     ✓ Tak
@@ -805,9 +806,9 @@
                                                         flex: 1,
                                                         minWidth: '100px',
                                                         padding: '10px 16px',
-                                                        background: 'rgba(255, 255, 255, 0.9)',
-                                                        color: '#2d5f3f',
-                                                        border: '2px solid rgba(255, 255, 255, 0.5)',
+                                                        background: 'white',
+                                                        color: '#333',
+                                                        border: '2px solid #ddd',
                                                         borderRadius: '10px',
                                                         fontSize: '14px',
                                                         fontWeight: 'bold',
@@ -816,10 +817,10 @@
                                                         transition: 'all 0.2s'
                                                     }}
                                                     onMouseEnter={(e) => {
-                                                        e.target.style.background = 'white';
+                                                        e.target.style.background = '#f5f5f5';
                                                     }}
                                                     onMouseLeave={(e) => {
-                                                        e.target.style.background = 'rgba(255, 255, 255, 0.9)';
+                                                        e.target.style.background = 'white';
                                                     }}
                                                 >
                                                     Później
@@ -865,7 +866,7 @@
                                     <div className="label" style={{
                                         fontSize: '24px',
                                         fontWeight: 'bold',
-                                        color: '#a8d5ba',
+                                        color: '#333',
                                         fontFamily: 'inherit'
                                     }}>
                                         Karmienie
@@ -902,7 +903,7 @@
                                     <div className="label" style={{
                                         fontSize: '24px',
                                         fontWeight: 'bold',
-                                        color: '#9fa8da',
+                                        color: '#333',
                                         fontFamily: 'inherit'
                                     }}>
                                         Kupka/Siku
@@ -934,7 +935,7 @@
                                 <button
                                     onClick={() => changeDate(-1)}
                                     style={{
-                                        background: '#ff6b6b',
+                                        background: '#000',
                                         color: 'white',
                                         border: 'none',
                                         borderRadius: '12px',
@@ -964,8 +965,8 @@
                                     onClick={() => changeDate(1)}
                                     disabled={selectedDate >= new Date()}
                                     style={{
-                                        background: selectedDate >= new Date() ? '#e0e0e0' : '#ff6b6b',
-                                        color: 'white',
+                                        background: selectedDate >= new Date() ? '#e0e0e0' : '#000',
+                                        color: selectedDate >= new Date() ? '#999' : 'white',
                                         border: 'none',
                                         borderRadius: '12px',
                                         padding: '12px 24px',
@@ -981,17 +982,18 @@
 
                             {/* Podsumowanie dnia */}
                             <div style={{
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                background: '#e0e0e0',
                                 borderRadius: '20px',
                                 padding: '24px',
                                 marginBottom: '24px',
-                                boxShadow: '0 4px 20px rgba(102, 126, 234, 0.3)'
+                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
                             }}>
                                 <h3 style={{
                                     margin: '0 0 16px 0',
-                                    color: 'white',
+                                    color: '#333',
                                     fontSize: '20px',
-                                    textAlign: 'center'
+                                    textAlign: 'center',
+                                    fontWeight: 'bold'
                                 }}>
                                     📊 Podsumowanie dnia
                                 </h3>
@@ -1001,219 +1003,219 @@
                                     gap: '16px'
                                 }}>
                                     <div style={{
-                                        background: 'rgba(255, 255, 255, 0.2)',
+                                        background: 'white',
                                         borderRadius: '12px',
                                         padding: '16px',
-                                        textAlign: 'center'
+                                        textAlign: 'center',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                                     }}>
                                         <div style={{ fontSize: '32px', marginBottom: '8px' }}>🍼</div>
-                                        <div style={{ fontSize: '28px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
+                                        <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#333', marginBottom: '4px' }}>
                                             {getDaySummary().feedingCount}
                                         </div>
-                                        <div style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.9)' }}>
-                                            {getDaySummary().feedingCount === 1 ? 'karmienie' : 'karmień'}
+                                        <div style={{ fontSize: '14px', color: '#666' }}>
+                                            {getDaySummary().feedingCount === 1 ? 'karmienie' : 'karmienia/karmień'}
                                         </div>
                                     </div>
                                     
                                     <div style={{
-                                        background: 'rgba(255, 255, 255, 0.2)',
+                                        background: 'white',
                                         borderRadius: '12px',
                                         padding: '16px',
-                                        textAlign: 'center'
+                                        textAlign: 'center',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                                     }}>
                                         <div style={{ fontSize: '32px', marginBottom: '8px' }}>💩</div>
-                                        <div style={{ fontSize: '28px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
+                                        <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#333', marginBottom: '4px' }}>
                                             {getDaySummary().poopCount}
                                         </div>
-                                        <div style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.9)' }}>
-                                            {getDaySummary().poopCount === 1 ? 'kupka' : 'kupek'}
+                                        <div style={{ fontSize: '14px', color: '#666' }}>
+                                            {getDaySummary().poopCount === 1 ? 'kupka' : 'kupki/kupek'}
                                         </div>
                                     </div>
                                     
                                     <div style={{
-                                        background: 'rgba(255, 255, 255, 0.2)',
+                                        background: 'white',
                                         borderRadius: '12px',
                                         padding: '16px',
-                                        textAlign: 'center'
+                                        textAlign: 'center',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                                     }}>
                                         <div style={{ fontSize: '32px', marginBottom: '8px' }}>💧</div>
-                                        <div style={{ fontSize: '28px', fontWeight: 'bold', color: 'white', marginBottom: '4px' }}>
+                                        <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#333', marginBottom: '4px' }}>
                                             {getDaySummary().peeCount}
                                         </div>
-                                        <div style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.9)' }}>
-                                            {getDaySummary().peeCount === 1 ? 'siku' : 'siku'}
+                                        <div style={{ fontSize: '14px', color: '#666' }}>
+                                            {getDaySummary().peeCount === 1 ? 'siku' : 'razy siku'}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            {/* Lista wpisów - Witamina D */}
+
+                            {/* Witamina D i Probiotyk - obok siebie */}
                             <div style={{
-                                background: 'white',
-                                borderRadius: '20px',
-                                padding: '24px',
-                                marginBottom: '24px',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                                gap: '16px',
+                                marginBottom: '24px'
                             }}>
-                                <h2 style={{
-                                    margin: '0 0 20px 0',
-                                    color: '#ffd93d',
-                                    fontSize: '24px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px'
+                                {/* Witamina D */}
+                                <div style={{
+                                    background: 'white',
+                                    borderRadius: '20px',
+                                    padding: '24px',
+                                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
                                 }}>
-                                    <span style={{ fontSize: '32px' }}>💊</span>
-                                    Witamina D
-                                </h2>
-                                
-                                {entries.filter(e => e.type === 'vitamin_d').length === 0 ? (
-                                    <div style={{
-                                        padding: '16px',
-                                        background: '#fff9e6',
-                                        borderRadius: '12px',
-                                        borderLeft: '4px solid #ffd93d'
+                                    <h2 style={{
+                                        margin: '0 0 20px 0',
+                                        color: '#333',
+                                        fontSize: '24px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px'
                                     }}>
-                                        <p style={{ color: '#b8860b', margin: 0, fontStyle: 'italic' }}>
-                                            ⚠️ Nie zaznaczono, że podano witaminę D
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                        {entries.filter(e => e.type === 'vitamin_d').map(entry => (
-                                            <div
-                                                key={entry.id}
-                                                style={{
-                                                    background: '#fffbf0',
-                                                    padding: '16px',
-                                                    borderRadius: '12px',
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    borderLeft: `4px solid ${getTypeColor(entry.type)}`,
-                                                    flexWrap: 'wrap',
-                                                    gap: '12px'
-                                                }}
-                                            >
-                                                <div>
-                                                    <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#b8860b' }}>
-                                                        {getTypeLabel(entry.type)}
-                                                    </div>
-                                                    <div style={{ fontSize: '14px', color: '#666' }}>
-                                                        {formatDateTime(entry.timestamp)}
-                                                    </div>
-                                                    {entry.note && (
-                                                        <div style={{ fontSize: '14px', color: '#666', fontStyle: 'italic', marginTop: '4px' }}>
-                                                            {entry.note}
+                                        <span style={{ fontSize: '32px' }}>💊</span>
+                                        Witamina D
+                                    </h2>
+                                    
+                                    {entries.filter(e => e.type === 'vitamin_d').length === 0 ? (
+                                        <div style={{
+                                            padding: '16px',
+                                            background: '#f5f5f5',
+                                            borderRadius: '12px',
+                                            borderLeft: '4px solid #999'
+                                        }}>
+                                            <p style={{ color: '#666', margin: 0, fontStyle: 'italic' }}>
+                                                ⚠️ Nie zaznaczono, że podano witaminę D
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                            {entries.filter(e => e.type === 'vitamin_d').map(entry => (
+                                                <div
+                                                    key={entry.id}
+                                                    style={{
+                                                        background: '#fafafa',
+                                                        padding: '16px',
+                                                        borderRadius: '12px',
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center',
+                                                        borderLeft: '4px solid #666',
+                                                        flexWrap: 'wrap',
+                                                        gap: '12px'
+                                                    }}
+                                                >
+                                                    <div>
+                                                        <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#333' }}>
+                                                            {getTypeLabel(entry.type)}
                                                         </div>
-                                                    )}
+                                                        <div style={{ fontSize: '14px', color: '#666' }}>
+                                                            {formatDateTime(entry.timestamp)}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                        <button
+                                                            onClick={() => setShowDeleteConfirm(entry.id)}
+                                                            style={{
+                                                                background: '#333',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                borderRadius: '8px',
+                                                                padding: '8px 16px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '14px',
+                                                                fontFamily: 'inherit'
+                                                            }}
+                                                        >
+                                                            Usuń
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                
-                                                <div style={{ display: 'flex', gap: '8px' }}>
-                                                    <button
-                                                        onClick={() => setShowDeleteConfirm(entry.id)}
-                                                        style={{
-                                                            background: '#f44336',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '8px',
-                                                            padding: '8px 16px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '14px',
-                                                            fontFamily: 'inherit'
-                                                        }}
-                                                    >
-                                                        Usuń
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            
-                            {/* Lista wpisów - Probiotyk */}
-                            <div style={{
-                                background: 'white',
-                                borderRadius: '20px',
-                                padding: '24px',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
-                            }}>
-                                <h2 style={{
-                                    margin: '0 0 20px 0',
-                                    color: '#9de0ad',
-                                    fontSize: '24px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px'
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {/* Probiotyk */}
+                                <div style={{
+                                    background: 'white',
+                                    borderRadius: '20px',
+                                    padding: '24px',
+                                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
                                 }}>
-                                    <span style={{ fontSize: '32px' }}>🦠</span>
-                                    Probiotyk
-                                </h2>
-                                
-                                {entries.filter(e => e.type === 'probiotic').length === 0 ? (
-                                    <div style={{
-                                        padding: '16px',
-                                        background: '#f0fdf4',
-                                        borderRadius: '12px',
-                                        borderLeft: '4px solid #9de0ad'
+                                    <h2 style={{
+                                        margin: '0 0 20px 0',
+                                        color: '#333',
+                                        fontSize: '24px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px'
                                     }}>
-                                        <p style={{ color: '#2d5f3f', margin: 0, fontStyle: 'italic' }}>
-                                            ⚠️ Nie zaznaczono, że podano probiotyk
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                        {entries.filter(e => e.type === 'probiotic').map(entry => (
-                                            <div
-                                                key={entry.id}
-                                                style={{
-                                                    background: '#f0fdf4',
-                                                    padding: '16px',
-                                                    borderRadius: '12px',
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    borderLeft: `4px solid ${getTypeColor(entry.type)}`,
-                                                    flexWrap: 'wrap',
-                                                    gap: '12px'
-                                                }}
-                                            >
-                                                <div>
-                                                    <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#2d5f3f' }}>
-                                                        {getTypeLabel(entry.type)}
-                                                    </div>
-                                                    <div style={{ fontSize: '14px', color: '#666' }}>
-                                                        {formatDateTime(entry.timestamp)}
-                                                    </div>
-                                                    {entry.note && (
-                                                        <div style={{ fontSize: '14px', color: '#666', fontStyle: 'italic', marginTop: '4px' }}>
-                                                            {entry.note}
+                                        <span style={{ fontSize: '32px' }}>🦠</span>
+                                        Probiotyk
+                                    </h2>
+                                    
+                                    {entries.filter(e => e.type === 'probiotic').length === 0 ? (
+                                        <div style={{
+                                            padding: '16px',
+                                            background: '#f5f5f5',
+                                            borderRadius: '12px',
+                                            borderLeft: '4px solid #999'
+                                        }}>
+                                            <p style={{ color: '#666', margin: 0, fontStyle: 'italic' }}>
+                                                ⚠️ Nie zaznaczono, że podano probiotyk
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                            {entries.filter(e => e.type === 'probiotic').map(entry => (
+                                                <div
+                                                    key={entry.id}
+                                                    style={{
+                                                        background: '#fafafa',
+                                                        padding: '16px',
+                                                        borderRadius: '12px',
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center',
+                                                        borderLeft: '4px solid #666',
+                                                        flexWrap: 'wrap',
+                                                        gap: '12px'
+                                                    }}
+                                                >
+                                                    <div>
+                                                        <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#333' }}>
+                                                            {getTypeLabel(entry.type)}
                                                         </div>
-                                                    )}
+                                                        <div style={{ fontSize: '14px', color: '#666' }}>
+                                                            {formatDateTime(entry.timestamp)}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                        <button
+                                                            onClick={() => setShowDeleteConfirm(entry.id)}
+                                                            style={{
+                                                                background: '#333',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                borderRadius: '8px',
+                                                                padding: '8px 16px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '14px',
+                                                                fontFamily: 'inherit'
+                                                            }}
+                                                        >
+                                                            Usuń
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                
-                                                <div style={{ display: 'flex', gap: '8px' }}>
-                                                    <button
-                                                        onClick={() => setShowDeleteConfirm(entry.id)}
-                                                        style={{
-                                                            background: '#f44336',
-                                                            color: 'white',
-                                                            border: 'none',
-                                                            borderRadius: '8px',
-                                                            padding: '8px 16px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '14px',
-                                                            fontFamily: 'inherit'
-                                                        }}
-                                                    >
-                                                        Usuń
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Lista wpisów - Karmienia */}
@@ -1226,7 +1228,7 @@
                             }}>
                                 <h2 style={{
                                     margin: '0 0 20px 0',
-                                    color: '#a8d5ba',
+                                    color: '#333',
                                     fontSize: '24px',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -1246,7 +1248,7 @@
                                             <div
                                                 key={entry.id}
                                                 style={{
-                                                    background: '#f8fff9',
+                                                    background: '#fafafa',
                                                     padding: '16px',
                                                     borderRadius: '12px',
                                                     display: 'flex',
@@ -1272,7 +1274,7 @@
                                                     <button
                                                         onClick={() => startEdit(entry)}
                                                         style={{
-                                                            background: '#4caf50',
+                                                            background: '#000',
                                                             color: 'white',
                                                             border: 'none',
                                                             borderRadius: '8px',
@@ -1288,7 +1290,7 @@
                                                     <button
                                                         onClick={() => setShowDeleteConfirm(entry.id)}
                                                         style={{
-                                                            background: '#f44336',
+                                                            background: '#333',
                                                             color: 'white',
                                                             border: 'none',
                                                             borderRadius: '8px',
@@ -1317,7 +1319,7 @@
                             }}>
                                 <h2 style={{
                                     margin: '0 0 20px 0',
-                                    color: '#d4a574',
+                                    color: '#333',
                                     fontSize: '24px',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -1366,7 +1368,7 @@
                                                     <button
                                                         onClick={() => startEdit(entry)}
                                                         style={{
-                                                            background: '#4caf50',
+                                                            background: '#000',
                                                             color: 'white',
                                                             border: 'none',
                                                             borderRadius: '8px',
@@ -1382,7 +1384,7 @@
                                                     <button
                                                         onClick={() => setShowDeleteConfirm(entry.id)}
                                                         style={{
-                                                            background: '#f44336',
+                                                            background: '#333',
                                                             color: 'white',
                                                             border: 'none',
                                                             borderRadius: '8px',
@@ -1400,6 +1402,7 @@
                                     </div>
                                 )}
                             </div>
+                            
                         </div>
                     )}
 
@@ -1626,7 +1629,7 @@
                                             flex: 1,
                                             minWidth: '120px',
                                             padding: '14px',
-                                            background: '#f44336',
+                                            background: '#333',
                                             color: 'white',
                                             border: 'none',
                                             borderRadius: '12px',
@@ -1660,7 +1663,7 @@
                                 <div style={{
                                     fontSize: '28px',
                                     fontWeight: 'bold',
-                                    color: '#4caf50'
+                                    color: '#333'
                                 }}>
                                     {notificationMessage}
                                 </div>
