@@ -117,6 +117,10 @@
             table tbody tr:nth-child(even) td:first-child {
                 background: #fafafa !important;
             }
+            
+            .pagination-button-text {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -175,6 +179,16 @@
             const [showProbioticPrompt, setShowProbioticPrompt] = useState(false);
             const [showSuccessNotification, setShowSuccessNotification] = useState(false);
             const [notificationMessage, setNotificationMessage] = useState('');
+            const [showManualAddModal, setShowManualAddModal] = useState(false);
+            const [manualAddData, setManualAddData] = useState({
+                feeding: false,
+                poop: false,
+                pee: false,
+                date: '',
+                time: ''
+            });
+            const [lastFeedingTime, setLastFeedingTime] = useState(null);
+            const [currentTime, setCurrentTime] = useState(new Date());
 
             // Sprawdź czy użytkownik jest zalogowany
             useEffect(() => {
@@ -206,6 +220,43 @@
                     fetchHistoricalSummary();
                 }
             }, [isLoggedIn, currentView]);
+
+            // Update current time every minute for time since last feeding
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    setCurrentTime(new Date());
+                }, 60000); // Update every minute
+                return () => clearInterval(timer);
+            }, []);
+
+            // Fetch last feeding globally when on dashboard
+            useEffect(() => {
+                const fetchLastFeeding = async () => {
+                    if (isLoggedIn && currentView === 'dashboard') {
+                        const { data, error } = await supabase
+                            .from('entries')
+                            .select('*')
+                            .eq('type', 'feeding')
+                            .order('timestamp', { ascending: false })
+                            .limit(1);
+                        
+                        if (!error && data && data.length > 0) {
+                            setLastFeedingTime(new Date(data[0].timestamp));
+                        }
+                    }
+                };
+                fetchLastFeeding();
+            }, [isLoggedIn, currentView, entries]);
+
+            const getTimeSinceLastFeeding = () => {
+                if (!lastFeedingTime) return null;
+                
+                const diff = currentTime - lastFeedingTime;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                
+                return { hours, minutes };
+            };
 
             const isToday = (date) => {
                 const today = new Date();
@@ -385,6 +436,61 @@
                 setModalType(type);
                 setModalData({ poop: false, pee: false, note: '', time: '' });
                 setShowModal(true);
+            };
+
+            const openManualAddModal = () => {
+                const now = new Date();
+                setManualAddData({
+                    feeding: false,
+                    poop: false,
+                    pee: false,
+                    date: now.toISOString().split('T')[0],
+                    time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+                });
+                setShowManualAddModal(true);
+            };
+
+            const saveManualEntry = async () => {
+                const { feeding, poop, pee, date, time } = manualAddData;
+                
+                if (!feeding && !poop && !pee) {
+                    alert('Wybierz przynajmniej jedną opcję');
+                    return;
+                }
+
+                const [hours, minutes] = time.split(':');
+                const timestamp = new Date(date);
+                timestamp.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+                const entries = [];
+                
+                if (feeding) {
+                    entries.push({ type: 'feeding', timestamp: timestamp.toISOString(), note: null });
+                }
+                
+                if (poop && pee) {
+                    entries.push({ type: 'both', timestamp: timestamp.toISOString(), note: null });
+                } else {
+                    if (poop) {
+                        entries.push({ type: 'poop', timestamp: timestamp.toISOString(), note: null });
+                    }
+                    if (pee) {
+                        entries.push({ type: 'pee', timestamp: timestamp.toISOString(), note: null });
+                    }
+                }
+
+                const { error } = await supabase
+                    .from('entries')
+                    .insert(entries);
+
+                if (error) {
+                    console.error('Błąd dodawania:', error);
+                    alert('Błąd zapisu.');
+                } else {
+                    setShowManualAddModal(false);
+                    fetchEntries();
+                    showNotification('Dodano!');
+                }
             };
 
             const saveDiaperEntry = async () => {
@@ -709,7 +815,15 @@
                             alignItems: 'center',
                             marginBottom: '12px'
                         }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div 
+                                onClick={() => setCurrentView('dashboard')}
+                                style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '12px',
+                                    cursor: 'pointer'
+                                }}
+                            >
                                 <div style={{ fontSize: '36px' }}>👶</div>
                                 <h1 style={{ margin: 0, color: '#333', fontSize: '28px' }}>
                                     Baby Monitor
@@ -993,41 +1107,54 @@
                                 gap: '24px'
                             }}>
                                 {/* Karmienie */}
-                                <button
-                                    className="dashboard-button"
-                                    onClick={addFeeding}
-                                    style={{
-                                        background: 'white',
-                                        border: 'none',
-                                        borderRadius: '24px',
-                                        padding: '48px 32px',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                                        transition: 'all 0.3s',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        gap: '16px'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.transform = 'translateY(-8px)';
-                                        e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.18)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.transform = 'translateY(0)';
-                                        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
-                                    }}
-                                >
-                                    <div className="emoji" style={{ fontSize: '72px' }}>🍼</div>
-                                    <div className="label" style={{
-                                        fontSize: '24px',
-                                        fontWeight: 'bold',
-                                        color: '#333',
-                                        fontFamily: 'inherit'
-                                    }}>
-                                        Karmienie
-                                    </div>
-                                </button>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    <button
+                                        className="dashboard-button"
+                                        onClick={addFeeding}
+                                        style={{
+                                            background: 'white',
+                                            border: 'none',
+                                            borderRadius: '24px',
+                                            padding: '48px 32px',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                                            transition: 'all 0.3s',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            gap: '16px',
+                                            width: '100%'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(-8px)';
+                                            e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.18)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
+                                        }}
+                                    >
+                                        <div className="emoji" style={{ fontSize: '72px' }}>🍼</div>
+                                        <div className="label" style={{
+                                            fontSize: '24px',
+                                            fontWeight: 'bold',
+                                            color: '#333',
+                                            fontFamily: 'inherit'
+                                        }}>
+                                            Karmienie
+                                        </div>
+                                    </button>
+                                    {getTimeSinceLastFeeding() && (
+                                        <div style={{
+                                            textAlign: 'center',
+                                            fontSize: '14px',
+                                            color: '#666',
+                                            fontWeight: '500'
+                                        }}>
+                                            Od ostatniego: {getTimeSinceLastFeeding().hours}h {getTimeSinceLastFeeding().minutes}min
+                                        </div>
+                                    )}
+                                </div>
 
                                 {/* Kupka/Siku */}
                                 <button
@@ -1064,6 +1191,38 @@
                                     }}>
                                         Kupka/Siku
                                     </div>
+                                </button>
+                            </div>
+                            
+                            {/* Dodaj ręcznie */}
+                            <div style={{ 
+                                textAlign: 'center',
+                                marginTop: '24px'
+                            }}>
+                                <button
+                                    onClick={openManualAddModal}
+                                    style={{
+                                        background: 'white',
+                                        border: '2px solid #e0e0e0',
+                                        borderRadius: '12px',
+                                        padding: '12px 24px',
+                                        cursor: 'pointer',
+                                        fontSize: '16px',
+                                        fontWeight: '600',
+                                        color: '#666',
+                                        fontFamily: 'inherit',
+                                        transition: 'all 0.3s'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.background = '#f5f5f5';
+                                        e.target.style.borderColor = '#ccc';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.background = 'white';
+                                        e.target.style.borderColor = '#e0e0e0';
+                                    }}
+                                >
+                                    Dodaj ręcznie +
                                 </button>
                             </div>
                         </div>
@@ -1669,7 +1828,7 @@
                                             fontWeight: '600'
                                         }}
                                     >
-                                        ← Poprzednie
+                                        ← <span className="pagination-button-text">Poprzednie</span>
                                     </button>
                                     
                                     <div style={{
@@ -1697,7 +1856,180 @@
                                             fontWeight: '600'
                                         }}
                                     >
-                                        Następne →
+                                        <span className="pagination-button-text">Następne</span> →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Manual Add Modal */}
+                    {showManualAddModal && (
+                        <div style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'rgba(0,0,0,0.5)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '20px',
+                            zIndex: 1000
+                        }}>
+                            <div style={{
+                                background: 'white',
+                                borderRadius: '24px',
+                                padding: '32px',
+                                maxWidth: '500px',
+                                width: '100%',
+                                boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+                            }}>
+                                <h2 style={{ margin: '0 0 24px 0', fontSize: '24px', color: '#333' }}>
+                                    Dodaj ręcznie
+                                </h2>
+                                
+                                {/* Type selection */}
+                                <div style={{ marginBottom: '24px' }}>
+                                    <label style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        padding: '16px',
+                                        background: '#f8f8f8',
+                                        borderRadius: '12px',
+                                        cursor: 'pointer',
+                                        marginBottom: '12px'
+                                    }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={manualAddData.feeding}
+                                            onChange={(e) => setManualAddData({...manualAddData, feeding: e.target.checked})}
+                                            style={{ width: '24px', height: '24px', cursor: 'pointer' }}
+                                        />
+                                        <span style={{ fontSize: '24px' }}>🍼</span>
+                                        <span style={{ fontSize: '18px', fontWeight: '600' }}>Karmienie</span>
+                                    </label>
+                                    
+                                    <label style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        padding: '16px',
+                                        background: '#f8f8f8',
+                                        borderRadius: '12px',
+                                        cursor: 'pointer',
+                                        marginBottom: '12px'
+                                    }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={manualAddData.poop}
+                                            onChange={(e) => setManualAddData({...manualAddData, poop: e.target.checked})}
+                                            style={{ width: '24px', height: '24px', cursor: 'pointer' }}
+                                        />
+                                        <span style={{ fontSize: '24px' }}>💩</span>
+                                        <span style={{ fontSize: '18px', fontWeight: '600' }}>Kupka</span>
+                                    </label>
+                                    
+                                    <label style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        padding: '16px',
+                                        background: '#f8f8f8',
+                                        borderRadius: '12px',
+                                        cursor: 'pointer'
+                                    }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={manualAddData.pee}
+                                            onChange={(e) => setManualAddData({...manualAddData, pee: e.target.checked})}
+                                            style={{ width: '24px', height: '24px', cursor: 'pointer' }}
+                                        />
+                                        <span style={{ fontSize: '24px' }}>💧</span>
+                                        <span style={{ fontSize: '18px', fontWeight: '600' }}>Siku</span>
+                                    </label>
+                                </div>
+                                
+                                {/* Date and time */}
+                                <div style={{ marginBottom: '24px' }}>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#555' }}>
+                                        Data
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={manualAddData.date}
+                                        onChange={(e) => setManualAddData({...manualAddData, date: e.target.value})}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            border: '2px solid #e0e0e0',
+                                            fontSize: '16px',
+                                            fontFamily: 'inherit',
+                                            boxSizing: 'border-box',
+                                            marginBottom: '16px'
+                                        }}
+                                    />
+                                    
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#555' }}>
+                                        Godzina
+                                    </label>
+                                    <input
+                                        type="time"
+                                        value={manualAddData.time}
+                                        onChange={(e) => setManualAddData({...manualAddData, time: e.target.value})}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            border: '2px solid #e0e0e0',
+                                            fontSize: '16px',
+                                            fontFamily: 'inherit',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
+                                </div>
+                                
+                                {/* Buttons */}
+                                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                    <button
+                                        onClick={() => setShowManualAddModal(false)}
+                                        style={{
+                                            flex: 1,
+                                            minWidth: '120px',
+                                            padding: '14px',
+                                            background: '#e0e0e0',
+                                            color: '#666',
+                                            border: 'none',
+                                            borderRadius: '12px',
+                                            fontSize: '16px',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            fontFamily: 'inherit'
+                                        }}
+                                    >
+                                        Anuluj
+                                    </button>
+                                    
+                                    <button
+                                        onClick={saveManualEntry}
+                                        style={{
+                                            flex: 1,
+                                            minWidth: '120px',
+                                            padding: '14px',
+                                            background: '#000',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '12px',
+                                            fontSize: '16px',
+                                            fontWeight: 'bold',
+                                            cursor: 'pointer',
+                                            fontFamily: 'inherit'
+                                        }}
+                                    >
+                                        Zapisz
                                     </button>
                                 </div>
                             </div>
