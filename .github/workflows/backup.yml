@@ -1,0 +1,84 @@
+name: Supabase Database Backup
+
+on:
+  # Automatyczny backup codziennie o 2:00 AM
+  schedule:
+    - cron: '0 2 * * *'
+  
+  # Możliwość manualnego uruchomienia
+  workflow_dispatch:
+  
+  # Backup przy każdym pushu do main (opcjonalne)
+  # push:
+  #   branches:
+  #     - main
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      
+      - name: Create backup directory
+        run: |
+          mkdir -p backups
+          echo "Backup directory created"
+      
+      - name: Backup database roles
+        run: |
+          supabase db dump \
+            --db-url "${{ secrets.SUPABASE_DB_URL }}" \
+            -f backups/roles.sql \
+            --role-only
+        continue-on-error: true
+      
+      - name: Backup database schema
+        run: |
+          supabase db dump \
+            --db-url "${{ secrets.SUPABASE_DB_URL }}" \
+            -f backups/schema.sql \
+            --schema public
+      
+      - name: Backup database data
+        run: |
+          supabase db dump \
+            --db-url "${{ secrets.SUPABASE_DB_URL }}" \
+            -f backups/data.sql \
+            --use-copy \
+            --data-only
+      
+      - name: Create backup metadata
+        run: |
+          echo "Backup Date: $(date)" > backups/BACKUP_INFO.txt
+          echo "Backup Time: $(date +%Y-%m-%d_%H-%M-%S)" >> backups/BACKUP_INFO.txt
+          echo "Database: baby-monitor" >> backups/BACKUP_INFO.txt
+          echo "---" >> backups/BACKUP_INFO.txt
+          echo "Files created:" >> backups/BACKUP_INFO.txt
+          ls -lh backups/*.sql >> backups/BACKUP_INFO.txt
+      
+      - name: Commit and push backup
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🔄 Automatic database backup - $(date +%Y-%m-%d)"
+          file_pattern: 'backups/*'
+          commit_user_name: Backup Bot
+          commit_user_email: backup-bot@github-actions
+          commit_author: Backup Bot <backup-bot@github-actions>
+      
+      - name: Backup summary
+        run: |
+          echo "✅ Backup completed successfully!"
+          echo "📁 Files backed up:"
+          ls -lh backups/

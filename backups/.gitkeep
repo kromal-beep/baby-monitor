@@ -1,0 +1,2 @@
+# Ten plik zapewnia, że folder backups/ jest śledzony przez Git
+# Backupy będą automatycznie zapisywane tutaj przez GitHub Actions
