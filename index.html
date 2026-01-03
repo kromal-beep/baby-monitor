@@ -4,6 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baby Monitor</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Monitorowanie niemowlaka - karmienie, kupka, siku">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Baby Monitor">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -2375,6 +2397,44 @@
         // Renderowanie aplikacji
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
+
+        // Rejestracja Service Worker dla PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/baby-monitor/service-worker.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker zarejestrowany:', registration.scope);
+                        
+                        // Sprawdź aktualizacje
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('🔄 Nowa wersja dostępna! Odśwież stronę.');
+                                    // Opcjonalnie: pokaż komunikat użytkownikowi o aktualizacji
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.log('❌ Błąd rejestracji Service Worker:', error);
+                    });
+            });
+        }
+
+        // Obsługa instalacji PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('💾 PWA można zainstalować');
+            e.preventDefault();
+            deferredPrompt = e;
+            // Tutaj możesz pokazać własny przycisk instalacji
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ PWA zainstalowane!');
+            deferredPrompt = null;
+        });
     </script>
 </body>
 </html>
