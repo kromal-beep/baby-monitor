@@ -153,11 +153,9 @@
         const App = () => {
             const [isLoggedIn, setIsLoggedIn] = useState(false);
             const [user, setUser] = useState(null);
-            const [email, setEmail] = useState('');
+            const [login, setLogin] = useState('');
             const [password, setPassword] = useState('');
             const [loginError, setLoginError] = useState('');
-            const [authMode, setAuthMode] = useState('login'); // 'login', 'register', 'reset'
-            const [successMessage, setSuccessMessage] = useState('');
             const [currentView, setCurrentView] = useState('dashboard');
             const [summaryPage, setSummaryPage] = useState(0);
             const ITEMS_PER_PAGE = 30;
@@ -388,22 +386,22 @@
             const handleLogin = async (e) => {
                 e.preventDefault();
                 setLoginError('');
-                setSuccessMessage('');
                 
                 try {
+                    // Konwertuj login na email format (login@app.local)
+                    const email = login.includes('@') ? login : `${login}@app.local`;
+                    
                     const { data, error } = await supabase.auth.signInWithPassword({
                         email: email,
                         password: password,
                     });
 
                     if (error) {
-                        setLoginError(error.message === 'Invalid login credentials' 
-                            ? 'Nieprawidłowy email lub hasło' 
-                            : error.message);
+                        setLoginError('Nieprawidłowy login lub hasło');
                     } else {
                         setUser(data.user);
                         setIsLoggedIn(true);
-                        setEmail('');
+                        setLogin('');
                         setPassword('');
                     }
                 } catch (error) {
@@ -412,61 +410,11 @@
                 }
             };
 
-            const handleRegister = async (e) => {
-                e.preventDefault();
-                setLoginError('');
-                setSuccessMessage('');
-                
-                try {
-                    const { data, error } = await supabase.auth.signUp({
-                        email: email,
-                        password: password,
-                    });
-
-                    if (error) {
-                        setLoginError(error.message === 'User already registered' 
-                            ? 'Ten email jest już zarejestrowany' 
-                            : error.message);
-                    } else {
-                        setSuccessMessage('Konto utworzone! Sprawdź email aby je aktywować.');
-                        setEmail('');
-                        setPassword('');
-                        setTimeout(() => setAuthMode('login'), 3000);
-                    }
-                } catch (error) {
-                    setLoginError('Błąd rejestracji. Spróbuj ponownie.');
-                    console.error('Register error:', error);
-                }
-            };
-
-            const handleResetPassword = async (e) => {
-                e.preventDefault();
-                setLoginError('');
-                setSuccessMessage('');
-                
-                try {
-                    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                        redirectTo: window.location.origin,
-                    });
-
-                    if (error) {
-                        setLoginError(error.message);
-                    } else {
-                        setSuccessMessage('Link do resetowania hasła został wysłany na email!');
-                        setEmail('');
-                        setTimeout(() => setAuthMode('login'), 3000);
-                    }
-                } catch (error) {
-                    setLoginError('Błąd resetowania hasła. Spróbuj ponownie.');
-                    console.error('Reset error:', error);
-                }
-            };
-
             const handleLogout = async () => {
                 await supabase.auth.signOut();
                 setIsLoggedIn(false);
                 setUser(null);
-                setEmail('');
+                setLogin('');
                 setPassword('');
             };
 
@@ -776,7 +724,7 @@
                                 </p>
                             </div>
                             
-                            <form onSubmit={authMode === 'login' ? handleLogin : authMode === 'register' ? handleRegister : handleResetPassword}>
+                            <form onSubmit={handleLogin}>
                                 <div style={{ marginBottom: '20px' }}>
                                     <label style={{ 
                                         display: 'block', 
@@ -785,14 +733,15 @@
                                         fontWeight: '600',
                                         fontSize: '14px'
                                     }}>
-                                        Email
+                                        Login
                                     </label>
                                     <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="twoj@email.com"
+                                        type="text"
+                                        value={login}
+                                        onChange={(e) => setLogin(e.target.value)}
+                                        placeholder="admin"
                                         required
+                                        autoComplete="username"
                                         style={{
                                             width: '100%',
                                             padding: '14px',
@@ -808,59 +757,37 @@
                                     />
                                 </div>
                                 
-                                {authMode !== 'reset' && (
-                                    <div style={{ marginBottom: '24px' }}>
-                                        <label style={{ 
-                                            display: 'block', 
-                                            marginBottom: '8px',
-                                            color: '#555',
-                                            fontWeight: '600',
-                                            fontSize: '14px'
-                                        }}>
-                                            Hasło
-                                        </label>
-                                        <input
-                                            type="password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            placeholder="••••••••"
-                                            required
-                                            minLength={authMode === 'register' ? 6 : undefined}
-                                            style={{
-                                                width: '100%',
-                                                padding: '14px',
-                                                borderRadius: '12px',
-                                                border: '2px solid #e0e0e0',
-                                                fontSize: '16px',
-                                                fontFamily: 'inherit',
-                                                boxSizing: 'border-box',
-                                                transition: 'border-color 0.3s'
-                                            }}
-                                            onFocus={(e) => e.target.style.borderColor = '#666'}
-                                            onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
-                                        />
-                                        {authMode === 'register' && (
-                                            <div style={{ fontSize: '12px', color: '#888', marginTop: '6px' }}>
-                                                Minimum 6 znaków
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                                
-                                {successMessage && (
-                                    <div style={{
-                                        background: '#e8f5e9',
-                                        color: '#2e7d32',
-                                        padding: '12px',
-                                        borderRadius: '8px',
-                                        marginBottom: '20px',
-                                        fontSize: '14px',
-                                        textAlign: 'center',
-                                        border: '1px solid #a5d6a7'
+                                <div style={{ marginBottom: '24px' }}>
+                                    <label style={{ 
+                                        display: 'block', 
+                                        marginBottom: '8px',
+                                        color: '#555',
+                                        fontWeight: '600',
+                                        fontSize: '14px'
                                     }}>
-                                        {successMessage}
-                                    </div>
-                                )}
+                                        Hasło
+                                    </label>
+                                    <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="••••••••"
+                                        required
+                                        autoComplete="current-password"
+                                        style={{
+                                            width: '100%',
+                                            padding: '14px',
+                                            borderRadius: '12px',
+                                            border: '2px solid #e0e0e0',
+                                            fontSize: '16px',
+                                            fontFamily: 'inherit',
+                                            boxSizing: 'border-box',
+                                            transition: 'border-color 0.3s'
+                                        }}
+                                        onFocus={(e) => e.target.style.borderColor = '#666'}
+                                        onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+                                    />
+                                </div>
                                 
                                 {loginError && (
                                     <div style={{
@@ -891,8 +818,7 @@
                                         cursor: 'pointer',
                                         fontFamily: 'inherit',
                                         transition: 'transform 0.2s, box-shadow 0.2s',
-                                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-                                        marginBottom: '16px'
+                                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
                                     }}
                                     onMouseEnter={(e) => {
                                         e.target.style.transform = 'translateY(-2px)';
@@ -903,73 +829,9 @@
                                         e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
                                     }}
                                 >
-                                    {authMode === 'login' && 'Zaloguj się'}
-                                    {authMode === 'register' && 'Zarejestruj się'}
-                                    {authMode === 'reset' && 'Wyślij link'}
+                                    Zaloguj się
                                 </button>
-                                
-                                <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                                    {authMode === 'login' && (
-                                        <>
-                                            <div style={{ marginBottom: '12px' }}>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setAuthMode('reset');
-                                                        setLoginError('');
-                                                        setSuccessMessage('');
-                                                    }}
-                                                    style={{
-                                                        background: 'none',
-                                                        border: 'none',
-                                                        color: '#666',
-                                                        fontSize: '14px',
-                                                        cursor: 'pointer',
-                                                        textDecoration: 'underline',
-                                                        fontFamily: 'inherit'
-                                                    }}
-                                                >
-                                                    Zapomniałeś hasła?
-                                                </button>
-                                            </div>
-                                            <div>
-                                                <span style={{ fontSize: '14px', color: '#888' }}>Nie masz konta? </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setAuthMode('register');
-                                                        setLoginError('');
-                                                        setSuccessMessage('');
-                                                    }}
-                                                    style={{
-                                                        background: 'none',
-                                                        border: 'none',
-                                                        color: '#000',
-                                                        fontSize: '14px',
-                                                        cursor: 'pointer',
-                                                        fontWeight: 'bold',
-                                                        textDecoration: 'underline',
-                                                        fontFamily: 'inherit'
-                                                    }}
-                                                >
-                                                    Zarejestruj się
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-                                    {(authMode === 'register' || authMode === 'reset') && (
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setAuthMode('login');
-                                                setLoginError('');
-                                                setSuccessMessage('');
-                                            }}
-                                            style={{
-                                                background: 'none',
-                                                border: 'none',
-                                                color: '#666',
-                                                fontSize: '14px',
+                            </form>
                                                 cursor: 'pointer',
                                                 textDecoration: 'underline',
                                                 fontFamily: 'inherit'
