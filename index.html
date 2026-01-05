@@ -1532,8 +1532,8 @@
                                     disabled={selectedDate >= new Date()}
                                     className="nav-button"
                                     style={{
-                                        background: selectedDate >= new Date() ? '#e0e0e0' : '#000',
-                                        color: selectedDate >= new Date() ? '#999' : 'white',
+                                        background: selectedDate >= new Date() ? colors.border : colors.button,
+                                        color: selectedDate >= new Date() ? colors.textSecondary : colors.buttonText,
                                         border: 'none',
                                         borderRadius: '12px',
                                         padding: '12px 24px',
@@ -1773,7 +1773,7 @@
                                 </h2>
                                 
                                 {entries.filter(e => e.type === 'feeding').length === 0 ? (
-                                    <p style={{ color: '#999', fontStyle: 'italic' }}>
+                                    <p style={{ color: colors.textSecondary, fontStyle: 'italic' }}>
                                         Brak wpisów
                                     </p>
                                 ) : (
@@ -1794,7 +1794,7 @@
                                                 }}
                                             >
                                                 <div>
-                                                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                                                    <div style={{ fontWeight: 'bold', marginBottom: '4px', color: colors.text }}>
                                                         {formatDateTime(entry.timestamp)}
                                                     </div>
                                                     {entry.note && (
@@ -1808,9 +1808,9 @@
                                                     <button
                                                         onClick={() => startEdit(entry)}
                                                         style={{
-                                                            background: '#ffffff',
-                                                            color: '#000000',
-                                                            border: '2px solid #000000',
+                                                            background: colors.card,
+                                                            color: colors.text,
+                                                            border: `2px solid ${colors.border}`,
                                                             borderRadius: '8px',
                                                             padding: '8px 16px',
                                                             cursor: 'pointer',
@@ -1864,7 +1864,7 @@
                                 </h2>
                                 
                                 {entries.filter(e => e.type !== 'feeding' && e.type !== 'vitamin_d' && e.type !== 'probiotic').length === 0 ? (
-                                    <p style={{ color: '#999', fontStyle: 'italic' }}>
+                                    <p style={{ color: colors.textSecondary, fontStyle: 'italic' }}>
                                         Brak wpisów
                                     </p>
                                 ) : (
@@ -1885,7 +1885,7 @@
                                                 }}
                                             >
                                                 <div>
-                                                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                                                    <div style={{ fontWeight: 'bold', marginBottom: '4px', color: colors.text }}>
                                                         {getTypeLabel(entry.type)}
                                                     </div>
                                                     <div style={{ fontSize: '14px', color: colors.textSecondary }}>
@@ -1902,9 +1902,9 @@
                                                     <button
                                                         onClick={() => startEdit(entry)}
                                                         style={{
-                                                            background: '#ffffff',
-                                                            color: '#000000',
-                                                            border: '2px solid #000000',
+                                                            background: colors.card,
+                                                            color: colors.text,
+                                                            border: `2px solid ${colors.border}`,
                                                             borderRadius: '8px',
                                                             padding: '8px 16px',
                                                             cursor: 'pointer',
@@ -1970,7 +1970,7 @@
                                         fontSize: '14px'
                                     }}>
                                         <thead>
-                                            <tr style={{ borderBottom: '2px solid #e0e0e0' }}>
+                                            <tr style={{ borderBottom: `2px solid ${colors.border}` }}>
                                                 <th style={{
                                                     padding: '12px',
                                                     textAlign: 'left',
@@ -2012,8 +2012,8 @@
                                                     <tr 
                                                         key={day.date}
                                                         style={{
-                                                            borderBottom: '1px solid #f0f0f0',
-                                                            background: index % 2 === 0 ? 'white' : '#fafafa'
+                                                            borderBottom: `1px solid ${colors.border}`,
+                                                            background: index % 2 === 0 ? colors.card : colors.hover
                                                         }}
                                                     >
                                                         <td style={{
