@@ -144,16 +144,7 @@
             table td:first-child {
                 position: sticky;
                 left: 0;
-                background: white;
                 z-index: 1;
-            }
-            
-            table thead tr th:first-child {
-                background: white !important;
-            }
-            
-            table tbody tr:nth-child(even) td:first-child {
-                background: #fafafa !important;
             }
             
             .pagination-button-text {
@@ -1975,7 +1966,11 @@
                                                     padding: '12px',
                                                     textAlign: 'left',
                                                     fontWeight: 'bold',
-                                                    color: colors.text
+                                                    color: colors.text,
+                                                    background: colors.card,
+                                                    position: 'sticky',
+                                                    left: 0,
+                                                    zIndex: 2
                                                 }}>
                                                     Data
                                                 </th>
@@ -2019,7 +2014,11 @@
                                                         <td style={{
                                                             padding: '12px',
                                                             fontWeight: '500',
-                                                            color: colors.text
+                                                            color: colors.text,
+                                                            background: index % 2 === 0 ? colors.card : colors.hover,
+                                                            position: 'sticky',
+                                                            left: 0,
+                                                            zIndex: 1
                                                         }}>
                                                             {new Date(day.date).toLocaleDateString('pl-PL', {
                                                                 day: '2-digit',
@@ -2203,43 +2202,55 @@
                                 </div>
                                 
                                 {/* Date and time */}
-                                <div style={{ marginBottom: '24px' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: colors.textSecondary }}>
-                                        Data
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={manualAddData.date}
-                                        onChange={(e) => setManualAddData({...manualAddData, date: e.target.value})}
-                                        style={{
-                                            width: '100%',
-                                            padding: '12px',
-                                            borderRadius: '12px',
-                                            border: `2px solid ${colors.border}`,
-                                            fontSize: '16px',
-                                            fontFamily: 'inherit',
-                                            boxSizing: 'border-box',
-                                            marginBottom: '16px'
-                                        }}
-                                    />
+                                <div style={{ 
+                                    marginBottom: '24px',
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                                    gap: '16px'
+                                }}>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: colors.textSecondary }}>
+                                            Data
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={manualAddData.date}
+                                            onChange={(e) => setManualAddData({...manualAddData, date: e.target.value})}
+                                            style={{
+                                                width: '100%',
+                                                padding: '12px',
+                                                borderRadius: '12px',
+                                                border: `2px solid ${colors.border}`,
+                                                fontSize: '16px',
+                                                fontFamily: 'inherit',
+                                                boxSizing: 'border-box',
+                                                background: colors.card,
+                                                color: colors.text
+                                            }}
+                                        />
+                                    </div>
                                     
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: colors.textSecondary }}>
-                                        Godzina
-                                    </label>
-                                    <input
-                                        type="time"
-                                        value={manualAddData.time}
-                                        onChange={(e) => setManualAddData({...manualAddData, time: e.target.value})}
-                                        style={{
-                                            width: '100%',
-                                            padding: '12px',
-                                            borderRadius: '12px',
-                                            border: `2px solid ${colors.border}`,
-                                            fontSize: '16px',
-                                            fontFamily: 'inherit',
-                                            boxSizing: 'border-box'
-                                        }}
-                                    />
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: colors.textSecondary }}>
+                                            Godzina
+                                        </label>
+                                        <input
+                                            type="time"
+                                            value={manualAddData.time}
+                                            onChange={(e) => setManualAddData({...manualAddData, time: e.target.value})}
+                                            style={{
+                                                width: '100%',
+                                                padding: '12px',
+                                                borderRadius: '12px',
+                                                border: `2px solid ${colors.border}`,
+                                                fontSize: '16px',
+                                                fontFamily: 'inherit',
+                                                boxSizing: 'border-box',
+                                                background: colors.card,
+                                                color: colors.text
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                                 
                                 {/* Buttons */}
@@ -2270,7 +2281,7 @@
                                             minWidth: '120px',
                                             padding: '14px',
                                             background: colors.button,
-                                            color: 'white',
+                                            color: colors.buttonText,
                                             border: 'none',
                                             borderRadius: '12px',
                                             fontSize: '16px',
@@ -2576,8 +2587,9 @@
                         </div>
                     )}
 
-                    {/* Theme toggle button (left bottom) */}
-                    <button
+                    {/* Theme toggle button (left bottom - dashboard only) */}
+                    {currentView === 'dashboard' && (
+                        <button
                         onClick={toggleTheme}
                         title={theme === 'light' ? 'Przełącz na tryb ciemny' : 'Przełącz na tryb jasny'}
                         style={{
@@ -2610,6 +2622,7 @@
                     >
                         {theme === 'light' ? '🌙' : '☀️'}
                     </button>
+                    )}
 
                     {/* Floating refresh button (mobile only) */}
                     <button
