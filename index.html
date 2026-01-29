@@ -2255,12 +2255,13 @@
                     {currentView === 'settings' && (
                         <div style={{
                             maxWidth: '600px',
-                            margin: '0 auto'
+                            margin: '0 auto',
+                            padding: '0 16px'
                         }}>
                             <div style={{
                                 background: colors.card,
                                 borderRadius: '20px',
-                                padding: '32px',
+                                padding: window.innerWidth < 768 ? '20px' : '32px',
                                 boxShadow: theme === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.1)'
                             }}>
                                 <h2 style={{
@@ -2296,10 +2297,9 @@
                                             display: 'flex',
                                             justifyContent: 'space-between',
                                             alignItems: 'center',
-                                            flexWrap: 'wrap',
-                                            gap: '16px'
+                                            gap: '12px'
                                         }}>
-                                            <div style={{ flex: 1, minWidth: '200px' }}>
+                                            <div style={{ flex: 1 }}>
                                                 <div style={{
                                                     fontSize: '18px',
                                                     fontWeight: '600',
@@ -2368,10 +2368,9 @@
                                             display: 'flex',
                                             justifyContent: 'space-between',
                                             alignItems: 'center',
-                                            flexWrap: 'wrap',
-                                            gap: '16px'
+                                            gap: '12px'
                                         }}>
-                                            <div style={{ flex: 1, minWidth: '200px' }}>
+                                            <div style={{ flex: 1 }}>
                                                 <div style={{
                                                     fontSize: '18px',
                                                     fontWeight: '600',
@@ -2960,9 +2959,10 @@
                         </div>
                     )}
 
-                    {/* Theme toggle button (left bottom) */}
-                    <button
-                        onClick={toggleTheme}
+                    {/* Theme toggle button (left bottom - dashboard only) */}
+                    {currentView === 'dashboard' && (
+                        <button
+                            onClick={toggleTheme}
                         title={theme === 'light' ? 'Przełącz na tryb ciemny' : 'Przełącz na tryb jasny'}
                         style={{
                             position: 'fixed',
@@ -2994,10 +2994,12 @@
                     >
                         {theme === 'light' ? '🌙' : '☀️'}
                     </button>
+                    )}
 
-                    {/* Floating refresh button (mobile only) */}
-                    <button
-                        onClick={refreshData}
+                    {/* Floating refresh button (mobile only - dashboard only) */}
+                    {currentView === 'dashboard' && (
+                        <button
+                            onClick={refreshData}
                         disabled={isRefreshing}
                         className="mobile-refresh-button"
                         style={{
@@ -3033,6 +3035,7 @@
                     >
                         🔄
                     </button>
+                    )}
                 </div>
             );
         };
