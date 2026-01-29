@@ -144,7 +144,16 @@
             table td:first-child {
                 position: sticky;
                 left: 0;
+                background: white;
                 z-index: 1;
+            }
+            
+            table thead tr th:first-child {
+                background: white !important;
+            }
+            
+            table tbody tr:nth-child(even) td:first-child {
+                background: #fafafa !important;
             }
             
             .pagination-button-text {
@@ -249,9 +258,9 @@
             const [editingEntry, setEditingEntry] = useState(null);
             const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
             const [showVitaminDPrompt, setShowVitaminDPrompt] = useState(false);
-                        const [showProbioticPrompt, setShowProbioticPrompt] = useState(false);
+            const [showProbioticPrompt, setShowProbioticPrompt] = useState(false);
             
-            // Settings state - saved in localStorage
+            // Settings state
             const [showVitaminDReminder, setShowVitaminDReminder] = useState(() => {
                 const saved = localStorage.getItem('babyMonitor_vitaminDReminder');
                 return saved !== null ? saved === 'true' : true;
@@ -259,16 +268,6 @@
             const [showProbioticReminder, setShowProbioticReminder] = useState(() => {
                 const saved = localStorage.getItem('babyMonitor_probioticReminder');
                 return saved !== null ? saved === 'true' : true;
-            });
-            
-            // Settings state (saved in localStorage)
-            const [showVitaminDReminder, setShowVitaminDReminder] = useState(() => {
-                const saved = localStorage.getItem('babyMonitor_vitaminDReminder');
-                return saved !== null ? saved === 'true' : true; // Default: true
-            });
-            const [showProbioticReminder, setShowProbioticReminder] = useState(() => {
-                const saved = localStorage.getItem('babyMonitor_probioticReminder');
-                return saved !== null ? saved === 'true' : true; // Default: true
             });
             const [showSuccessNotification, setShowSuccessNotification] = useState(false);
             const [notificationMessage, setNotificationMessage] = useState('');
@@ -379,11 +378,11 @@
                 }
             }, [isLoggedIn, currentView]);
 
-            // Update current time every second for accurate timer
+            // Update current time every minute for time since last feeding
             useEffect(() => {
                 const timer = setInterval(() => {
                     setCurrentTime(new Date());
-                }, 1000); // Update every second
+                }, 60000); // Update every minute
                 return () => clearInterval(timer);
             }, []);
 
@@ -409,7 +408,7 @@
             const getTimeSinceLastFeeding = () => {
                 if (!lastFeedingTime) return null;
                 
-                const diff = new Date() - lastFeedingTime;  // ✅ Zawsze aktualny czas!
+                const diff = currentTime - lastFeedingTime;
                 const hours = Math.floor(diff / (1000 * 60 * 60));
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 
@@ -636,7 +635,6 @@
                     alert('Błąd zapisu. Sprawdź konfigurację Supabase.');
                 } else {
                     showNotification('✅ Dodano karmienie');
-                    setLastFeedingTime(now);  // ✅ Natychmiastowa aktualizacja timera!
                     fetchEntries();
                 }
             };
@@ -1137,24 +1135,22 @@
                             </button>
                         </div>
                         
-                        {/* Tabs - Panel, Historia, Podsumowanie, Settings */}
+                        {/* Tabs - Panel, Historia, and Podsumowanie */}
                         <div style={{
                             background: colors.card,
                             borderRadius: '16px',
                             padding: '8px',
-                            boxShadow: theme === 'dark' ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.08)',
+                            boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
                             display: 'flex',
-                            gap: '8px',
-                            flexWrap: 'wrap'
+                            gap: '8px'
                         }}>
                             <button
                                 onClick={() => setCurrentView('dashboard')}
                                 style={{
                                     flex: 1,
-                                    minWidth: '80px',
                                     padding: '12px',
-                                    background: currentView === 'dashboard' ? colors.button : 'transparent',
-                                    color: currentView === 'dashboard' ? colors.buttonText : colors.textSecondary,
+                                    background: currentView === 'dashboard' ? '#000' : 'transparent',
+                                    color: currentView === 'dashboard' ? 'white' : '#666',
                                     border: 'none',
                                     borderRadius: '10px',
                                     cursor: 'pointer',
@@ -1171,10 +1167,9 @@
                                 onClick={() => setCurrentView('history')}
                                 style={{
                                     flex: 1,
-                                    minWidth: '80px',
                                     padding: '12px',
-                                    background: currentView === 'history' ? colors.button : 'transparent',
-                                    color: currentView === 'history' ? colors.buttonText : colors.textSecondary,
+                                    background: currentView === 'history' ? '#000' : 'transparent',
+                                    color: currentView === 'history' ? 'white' : '#666',
                                     border: 'none',
                                     borderRadius: '10px',
                                     cursor: 'pointer',
@@ -1191,10 +1186,9 @@
                                 onClick={() => setCurrentView('summary')}
                                 style={{
                                     flex: 1,
-                                    minWidth: '80px',
                                     padding: '12px',
-                                    background: currentView === 'summary' ? colors.button : 'transparent',
-                                    color: currentView === 'summary' ? colors.buttonText : colors.textSecondary,
+                                    background: currentView === 'summary' ? '#000' : 'transparent',
+                                    color: currentView === 'summary' ? 'white' : '#666',
                                     border: 'none',
                                     borderRadius: '10px',
                                     cursor: 'pointer',
@@ -1205,26 +1199,6 @@
                                 }}
                             >
                                 Podsumowanie
-                            </button>
-                            
-                            <button
-                                onClick={() => setCurrentView('settings')}
-                                style={{
-                                    flex: 1,
-                                    minWidth: '80px',
-                                    padding: '12px',
-                                    background: currentView === 'settings' ? colors.button : 'transparent',
-                                    color: currentView === 'settings' ? colors.buttonText : colors.textSecondary,
-                                    border: 'none',
-                                    borderRadius: '10px',
-                                    cursor: 'pointer',
-                                    fontFamily: 'inherit',
-                                    fontSize: '16px',
-                                    fontWeight: '600',
-                                    transition: 'all 0.3s'
-                                }}
-                            >
-                                ⚙️ Ustawienia
                             </button>
                         </div>
                     </div>
@@ -1246,7 +1220,7 @@
                                     {/* Vitamin D prompt */}
                                     {showVitaminDPrompt && (
                                         <div style={{
-                                            background: colors.card,
+                                            background: '#e8e8e8',
                                             borderRadius: '16px',
                                             padding: '20px',
                                             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
@@ -1306,7 +1280,7 @@
                                                         padding: '10px 16px',
                                                         background: colors.card,
                                                         color: colors.text,
-                                                        border: `2px solid ${colors.border}`,
+                                                        border: '2px solid #ddd',
                                                         borderRadius: '10px',
                                                         fontSize: '14px',
                                                         fontWeight: 'bold',
@@ -1315,10 +1289,10 @@
                                                         transition: 'all 0.2s'
                                                     }}
                                                     onMouseEnter={(e) => {
-                                                        e.target.style.background = colors.hover;
+                                                        e.target.style.background = '#f5f5f5';
                                                     }}
                                                     onMouseLeave={(e) => {
-                                                        e.target.style.background = colors.card;
+                                                        e.target.style.background = 'white';
                                                     }}
                                                 >
                                                     Później
@@ -1330,7 +1304,7 @@
                                     {/* Probiotic prompt */}
                                     {showProbioticPrompt && (
                                         <div style={{
-                                            background: colors.card,
+                                            background: '#e8e8e8',
                                             borderRadius: '16px',
                                             padding: '20px',
                                             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
@@ -1390,7 +1364,7 @@
                                                         padding: '10px 16px',
                                                         background: colors.card,
                                                         color: colors.text,
-                                                        border: `2px solid ${colors.border}`,
+                                                        border: '2px solid #ddd',
                                                         borderRadius: '10px',
                                                         fontSize: '14px',
                                                         fontWeight: 'bold',
@@ -1399,10 +1373,10 @@
                                                         transition: 'all 0.2s'
                                                     }}
                                                     onMouseEnter={(e) => {
-                                                        e.target.style.background = colors.hover;
+                                                        e.target.style.background = '#f5f5f5';
                                                     }}
                                                     onMouseLeave={(e) => {
-                                                        e.target.style.background = colors.card;
+                                                        e.target.style.background = 'white';
                                                     }}
                                                 >
                                                     Później
@@ -1523,11 +1497,11 @@
                                         transition: 'all 0.3s'
                                     }}
                                     onMouseEnter={(e) => {
-                                        e.target.style.background = colors.hover;
+                                        e.target.style.background = '#f5f5f5';
                                         e.target.style.borderColor = '#ccc';
                                     }}
                                     onMouseLeave={(e) => {
-                                        e.target.style.background = colors.card;
+                                        e.target.style.background = 'white';
                                         e.target.style.borderColor = '#e0e0e0';
                                     }}
                                 >
@@ -1561,7 +1535,7 @@
                                     className="nav-button"
                                     style={{
                                         background: colors.button,
-                                        color: colors.buttonText,
+                                        color: 'white',
                                         border: 'none',
                                         borderRadius: '12px',
                                         padding: '12px 24px',
@@ -1591,8 +1565,8 @@
                                     disabled={selectedDate >= new Date()}
                                     className="nav-button"
                                     style={{
-                                        background: selectedDate >= new Date() ? colors.border : colors.button,
-                                        color: selectedDate >= new Date() ? colors.textSecondary : colors.buttonText,
+                                        background: selectedDate >= new Date() ? '#e0e0e0' : '#000',
+                                        color: selectedDate >= new Date() ? '#999' : 'white',
                                         border: 'none',
                                         borderRadius: '12px',
                                         padding: '12px 24px',
@@ -1832,7 +1806,7 @@
                                 </h2>
                                 
                                 {entries.filter(e => e.type === 'feeding').length === 0 ? (
-                                    <p style={{ color: colors.textSecondary, fontStyle: 'italic' }}>
+                                    <p style={{ color: '#999', fontStyle: 'italic' }}>
                                         Brak wpisów
                                     </p>
                                 ) : (
@@ -1853,7 +1827,7 @@
                                                 }}
                                             >
                                                 <div>
-                                                    <div style={{ fontWeight: 'bold', marginBottom: '4px', color: colors.text }}>
+                                                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
                                                         {formatDateTime(entry.timestamp)}
                                                     </div>
                                                     {entry.note && (
@@ -1867,9 +1841,9 @@
                                                     <button
                                                         onClick={() => startEdit(entry)}
                                                         style={{
-                                                            background: colors.card,
-                                                            color: colors.text,
-                                                            border: `2px solid ${colors.border}`,
+                                                            background: '#ffffff',
+                                                            color: '#000000',
+                                                            border: '2px solid #000000',
                                                             borderRadius: '8px',
                                                             padding: '8px 16px',
                                                             cursor: 'pointer',
@@ -1923,7 +1897,7 @@
                                 </h2>
                                 
                                 {entries.filter(e => e.type !== 'feeding' && e.type !== 'vitamin_d' && e.type !== 'probiotic').length === 0 ? (
-                                    <p style={{ color: colors.textSecondary, fontStyle: 'italic' }}>
+                                    <p style={{ color: '#999', fontStyle: 'italic' }}>
                                         Brak wpisów
                                     </p>
                                 ) : (
@@ -1944,7 +1918,7 @@
                                                 }}
                                             >
                                                 <div>
-                                                    <div style={{ fontWeight: 'bold', marginBottom: '4px', color: colors.text }}>
+                                                    <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
                                                         {getTypeLabel(entry.type)}
                                                     </div>
                                                     <div style={{ fontSize: '14px', color: colors.textSecondary }}>
@@ -1961,9 +1935,9 @@
                                                     <button
                                                         onClick={() => startEdit(entry)}
                                                         style={{
-                                                            background: colors.card,
-                                                            color: colors.text,
-                                                            border: `2px solid ${colors.border}`,
+                                                            background: '#ffffff',
+                                                            color: '#000000',
+                                                            border: '2px solid #000000',
                                                             borderRadius: '8px',
                                                             padding: '8px 16px',
                                                             cursor: 'pointer',
@@ -1985,93 +1959,6 @@
                                                             cursor: 'pointer',
                                                             fontSize: '14px',
                                                             fontFamily: 'inherit'
-                                                        }}
-                                                    >
-                                                        Usuń
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            
-                            {/* Notatki */}
-                            <div style={{
-                                background: colors.card,
-                                borderRadius: '20px',
-                                padding: '24px',
-                                marginBottom: '24px',
-                                boxShadow: theme === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.1)'
-                            }}>
-                                <h2 style={{
-                                    margin: '0 0 20px 0',
-                                    color: colors.text,
-                                    fontSize: '24px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px'
-                                }}>
-                                    <span style={{ fontSize: '32px' }}>📝</span>
-                                    Notatki
-                                </h2>
-                                
-                                {entries.filter(e => e.type === 'note').length === 0 ? (
-                                    <p style={{ color: colors.textSecondary, fontStyle: 'italic' }}>
-                                        Brak notatek
-                                    </p>
-                                ) : (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                        {entries.filter(e => e.type === 'note').map(entry => (
-                                            <div
-                                                key={entry.id}
-                                                style={{
-                                                    background: colors.hover,
-                                                    padding: '16px',
-                                                    borderRadius: '12px',
-                                                    borderLeft: '4px solid #FFA726',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    gap: '8px'
-                                                }}
-                                            >
-                                                <div style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'flex-start',
-                                                    gap: '12px',
-                                                    flexWrap: 'wrap'
-                                                }}>
-                                                    <div style={{ flex: 1 }}>
-                                                        <div style={{ 
-                                                            fontSize: '14px', 
-                                                            color: colors.textSecondary,
-                                                            marginBottom: '8px'
-                                                        }}>
-                                                            {formatDateTime(entry.timestamp)}
-                                                        </div>
-                                                        <div style={{ 
-                                                            color: colors.text,
-                                                            lineHeight: '1.6',
-                                                            whiteSpace: 'pre-wrap',
-                                                            fontSize: '15px'
-                                                        }}>
-                                                            {entry.note}
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <button
-                                                        onClick={() => setShowDeleteConfirm(entry.id)}
-                                                        style={{
-                                                            background: '#D21632',
-                                                            color: '#ffffff',
-                                                            border: 'none',
-                                                            borderRadius: '8px',
-                                                            padding: '8px 16px',
-                                                            cursor: 'pointer',
-                                                            fontSize: '14px',
-                                                            fontFamily: 'inherit',
-                                                            minWidth: '60px'
                                                         }}
                                                     >
                                                         Usuń
@@ -2116,16 +2003,12 @@
                                         fontSize: '14px'
                                     }}>
                                         <thead>
-                                            <tr style={{ borderBottom: `2px solid ${colors.border}` }}>
+                                            <tr style={{ borderBottom: '2px solid #e0e0e0' }}>
                                                 <th style={{
                                                     padding: '12px',
                                                     textAlign: 'left',
                                                     fontWeight: 'bold',
-                                                    color: colors.text,
-                                                    background: colors.card,
-                                                    position: 'sticky',
-                                                    left: 0,
-                                                    zIndex: 2
+                                                    color: colors.text
                                                 }}>
                                                     Data
                                                 </th>
@@ -2162,18 +2045,14 @@
                                                     <tr 
                                                         key={day.date}
                                                         style={{
-                                                            borderBottom: `1px solid ${colors.border}`,
-                                                            background: index % 2 === 0 ? colors.card : colors.hover
+                                                            borderBottom: '1px solid #f0f0f0',
+                                                            background: index % 2 === 0 ? 'white' : '#fafafa'
                                                         }}
                                                     >
                                                         <td style={{
                                                             padding: '12px',
                                                             fontWeight: '500',
-                                                            color: colors.text,
-                                                            background: index % 2 === 0 ? colors.card : colors.hover,
-                                                            position: 'sticky',
-                                                            left: 0,
-                                                            zIndex: 1
+                                                            color: colors.text
                                                         }}>
                                                             {new Date(day.date).toLocaleDateString('pl-PL', {
                                                                 day: '2-digit',
@@ -2267,205 +2146,6 @@
                         </div>
                     )}
 
-                    {/* Settings View */}
-                    {currentView === 'settings' && (
-                        <div style={{
-                            maxWidth: '600px',
-                            margin: '0 auto'
-                        }}>
-                            <div style={{
-                                background: colors.card,
-                                borderRadius: '20px',
-                                padding: '32px',
-                                boxShadow: theme === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.1)'
-                            }}>
-                                <h2 style={{
-                                    margin: '0 0 24px 0',
-                                    color: colors.text,
-                                    fontSize: '28px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px'
-                                }}>
-                                    <span>⚙️</span>
-                                    Ustawienia
-                                </h2>
-                                
-                                <div style={{ marginBottom: '32px' }}>
-                                    <h3 style={{
-                                        margin: '0 0 16px 0',
-                                        color: colors.text,
-                                        fontSize: '20px',
-                                        fontWeight: '600'
-                                    }}>
-                                        Powiadomienia
-                                    </h3>
-                                    
-                                    {/* Vitamin D Toggle */}
-                                    <div style={{
-                                        background: colors.hover,
-                                        borderRadius: '12px',
-                                        padding: '20px',
-                                        marginBottom: '16px'
-                                    }}>
-                                        <div style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            flexWrap: 'wrap',
-                                            gap: '16px'
-                                        }}>
-                                            <div style={{ flex: 1, minWidth: '200px' }}>
-                                                <div style={{
-                                                    fontSize: '18px',
-                                                    fontWeight: '600',
-                                                    color: colors.text,
-                                                    marginBottom: '4px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '8px'
-                                                }}>
-                                                    <span>💊</span> Witamina D
-                                                </div>
-                                                <div style={{
-                                                    fontSize: '14px',
-                                                    color: colors.textSecondary
-                                                }}>
-                                                    Przypominaj o podaniu witaminy D
-                                                </div>
-                                            </div>
-                                            
-                                            <label style={{
-                                                position: 'relative',
-                                                display: 'inline-block',
-                                                width: '60px',
-                                                height: '34px',
-                                                cursor: 'pointer'
-                                            }}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={showVitaminDReminder}
-                                                    onChange={(e) => toggleVitaminDReminder(e.target.checked)}
-                                                    style={{ display: 'none' }}
-                                                />
-                                                <span style={{
-                                                    position: 'absolute',
-                                                    cursor: 'pointer',
-                                                    top: 0,
-                                                    left: 0,
-                                                    right: 0,
-                                                    bottom: 0,
-                                                    backgroundColor: showVitaminDReminder ? '#4CAF50' : colors.border,
-                                                    transition: '0.3s',
-                                                    borderRadius: '34px'
-                                                }}>
-                                                    <span style={{
-                                                        position: 'absolute',
-                                                        height: '26px',
-                                                        width: '26px',
-                                                        left: showVitaminDReminder ? '30px' : '4px',
-                                                        bottom: '4px',
-                                                        backgroundColor: 'white',
-                                                        transition: '0.3s',
-                                                        borderRadius: '50%'
-                                                    }}></span>
-                                                </span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    {/* Probiotic Toggle */}
-                                    <div style={{
-                                        background: colors.hover,
-                                        borderRadius: '12px',
-                                        padding: '20px'
-                                    }}>
-                                        <div style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            flexWrap: 'wrap',
-                                            gap: '16px'
-                                        }}>
-                                            <div style={{ flex: 1, minWidth: '200px' }}>
-                                                <div style={{
-                                                    fontSize: '18px',
-                                                    fontWeight: '600',
-                                                    color: colors.text,
-                                                    marginBottom: '4px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '8px'
-                                                }}>
-                                                    <span>🦠</span> Probiotyk
-                                                </div>
-                                                <div style={{
-                                                    fontSize: '14px',
-                                                    color: colors.textSecondary
-                                                }}>
-                                                    Przypominaj o podaniu probiotyku
-                                                </div>
-                                            </div>
-                                            
-                                            <label style={{
-                                                position: 'relative',
-                                                display: 'inline-block',
-                                                width: '60px',
-                                                height: '34px',
-                                                cursor: 'pointer'
-                                            }}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={showProbioticReminder}
-                                                    onChange={(e) => toggleProbioticReminder(e.target.checked)}
-                                                    style={{ display: 'none' }}
-                                                />
-                                                <span style={{
-                                                    position: 'absolute',
-                                                    cursor: 'pointer',
-                                                    top: 0,
-                                                    left: 0,
-                                                    right: 0,
-                                                    bottom: 0,
-                                                    backgroundColor: showProbioticReminder ? '#4CAF50' : colors.border,
-                                                    transition: '0.3s',
-                                                    borderRadius: '34px'
-                                                }}>
-                                                    <span style={{
-                                                        position: 'absolute',
-                                                        height: '26px',
-                                                        width: '26px',
-                                                        left: showProbioticReminder ? '30px' : '4px',
-                                                        bottom: '4px',
-                                                        backgroundColor: 'white',
-                                                        transition: '0.3s',
-                                                        borderRadius: '50%'
-                                                    }}></span>
-                                                </span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                {/* Info Box */}
-                                <div style={{
-                                    padding: '16px',
-                                    background: theme === 'dark' ? 'rgba(76, 175, 80, 0.1)' : '#e8f5e9',
-                                    borderRadius: '12px',
-                                    borderLeft: '4px solid #4CAF50'
-                                }}>
-                                    <div style={{
-                                        fontSize: '14px',
-                                        color: colors.text,
-                                        lineHeight: '1.6'
-                                    }}>
-                                        💡 <strong>Info:</strong> Powiadomienia pokazują się tylko raz dziennie, gdy nie zaznaczono jeszcze podania witaminy D lub probiotyku.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
                     {/* Manual Add Modal */}
                     {showManualAddModal && (
                         <div style={{
@@ -2553,106 +2233,47 @@
                                         <span style={{ fontSize: '24px' }}>💧</span>
                                         <span style={{ fontSize: '18px', fontWeight: '600' }}>Siku</span>
                                     </label>
-                                    
-                                    <label style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '12px',
-                                        padding: '16px',
-                                        background: colors.hover,
-                                        borderRadius: '12px',
-                                        cursor: 'pointer',
-                                        marginTop: '12px'
-                                    }}>
-                                        <input
-                                            type="checkbox"
-                                            checked={manualAddData.note}
-                                            onChange={(e) => setManualAddData({...manualAddData, note: e.target.checked})}
-                                            style={{ width: '24px', height: '24px', cursor: 'pointer' }}
-                                        />
-                                        <span style={{ fontSize: '24px' }}>📝</span>
-                                        <span style={{ fontSize: '18px', fontWeight: '600', color: colors.text }}>Notatka</span>
-                                    </label>
                                 </div>
                                 
                                 {/* Date and time */}
-                                <div style={{ 
-                                    marginBottom: '24px',
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                                    gap: '16px'
-                                }}>
-                                    <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: colors.textSecondary }}>
-                                            Data
-                                        </label>
-                                        <input
-                                            type="date"
-                                            value={manualAddData.date}
-                                            onChange={(e) => setManualAddData({...manualAddData, date: e.target.value})}
-                                            style={{
-                                                width: '100%',
-                                                padding: '12px',
-                                                borderRadius: '12px',
-                                                border: `2px solid ${colors.border}`,
-                                                fontSize: '16px',
-                                                fontFamily: 'inherit',
-                                                boxSizing: 'border-box',
-                                                background: colors.card,
-                                                color: colors.text
-                                            }}
-                                        />
-                                    </div>
+                                <div style={{ marginBottom: '24px' }}>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: colors.textSecondary }}>
+                                        Data
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={manualAddData.date}
+                                        onChange={(e) => setManualAddData({...manualAddData, date: e.target.value})}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            border: `2px solid ${colors.border}`,
+                                            fontSize: '16px',
+                                            fontFamily: 'inherit',
+                                            boxSizing: 'border-box',
+                                            marginBottom: '16px'
+                                        }}
+                                    />
                                     
-                                    <div>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: colors.textSecondary }}>
-                                            Godzina
-                                        </label>
-                                        <input
-                                            type="time"
-                                            value={manualAddData.time}
-                                            onChange={(e) => setManualAddData({...manualAddData, time: e.target.value})}
-                                            style={{
-                                                width: '100%',
-                                                padding: '12px',
-                                                borderRadius: '12px',
-                                                border: `2px solid ${colors.border}`,
-                                                fontSize: '16px',
-                                                fontFamily: 'inherit',
-                                                boxSizing: 'border-box',
-                                                background: colors.card,
-                                                color: colors.text
-                                            }}
-                                        />
-                                    </div>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: colors.textSecondary }}>
+                                        Godzina
+                                    </label>
+                                    <input
+                                        type="time"
+                                        value={manualAddData.time}
+                                        onChange={(e) => setManualAddData({...manualAddData, time: e.target.value})}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            borderRadius: '12px',
+                                            border: `2px solid ${colors.border}`,
+                                            fontSize: '16px',
+                                            fontFamily: 'inherit',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
                                 </div>
-                                
-                                {/* Note textarea - pokazuje się tylko gdy zaznaczone */}
-                                {manualAddData.note && (
-                                    <div style={{ marginBottom: '24px' }}>
-                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: colors.textSecondary }}>
-                                            Treść notatki
-                                        </label>
-                                        <textarea
-                                            value={manualAddData.noteText || ''}
-                                            onChange={(e) => setManualAddData({...manualAddData, noteText: e.target.value})}
-                                            placeholder="Wpisz swoją notatkę..."
-                                            style={{
-                                                width: '100%',
-                                                minHeight: '100px',
-                                                padding: '12px',
-                                                borderRadius: '12px',
-                                                border: `2px solid ${colors.border}`,
-                                                fontSize: '16px',
-                                                fontFamily: 'inherit',
-                                                boxSizing: 'border-box',
-                                                background: colors.card,
-                                                color: colors.text,
-                                                resize: 'vertical'
-                                            }}
-                                        />
-                                    </div>
-                                )}
                                 
                                 {/* Buttons */}
                                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -2682,7 +2303,7 @@
                                             minWidth: '120px',
                                             padding: '14px',
                                             background: colors.button,
-                                            color: colors.buttonText,
+                                            color: 'white',
                                             border: 'none',
                                             borderRadius: '12px',
                                             fontSize: '16px',
@@ -2988,9 +2609,8 @@
                         </div>
                     )}
 
-                    {/* Theme toggle button (left bottom - dashboard only) */}
-                    {currentView === 'dashboard' && (
-                        <button
+                    {/* Theme toggle button (left bottom) */}
+                    <button
                         onClick={toggleTheme}
                         title={theme === 'light' ? 'Przełącz na tryb ciemny' : 'Przełącz na tryb jasny'}
                         style={{
@@ -3023,7 +2643,6 @@
                     >
                         {theme === 'light' ? '🌙' : '☀️'}
                     </button>
-                    )}
 
                     {/* Floating refresh button (mobile only) */}
                     <button
