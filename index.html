@@ -249,7 +249,27 @@
             const [editingEntry, setEditingEntry] = useState(null);
             const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
             const [showVitaminDPrompt, setShowVitaminDPrompt] = useState(false);
-            const [showProbioticPrompt, setShowProbioticPrompt] = useState(false);
+                        const [showProbioticPrompt, setShowProbioticPrompt] = useState(false);
+            
+            // Settings state - saved in localStorage
+            const [showVitaminDReminder, setShowVitaminDReminder] = useState(() => {
+                const saved = localStorage.getItem('babyMonitor_vitaminDReminder');
+                return saved !== null ? saved === 'true' : true;
+            });
+            const [showProbioticReminder, setShowProbioticReminder] = useState(() => {
+                const saved = localStorage.getItem('babyMonitor_probioticReminder');
+                return saved !== null ? saved === 'true' : true;
+            });
+            
+            // Settings state (saved in localStorage)
+            const [showVitaminDReminder, setShowVitaminDReminder] = useState(() => {
+                const saved = localStorage.getItem('babyMonitor_vitaminDReminder');
+                return saved !== null ? saved === 'true' : true; // Default: true
+            });
+            const [showProbioticReminder, setShowProbioticReminder] = useState(() => {
+                const saved = localStorage.getItem('babyMonitor_probioticReminder');
+                return saved !== null ? saved === 'true' : true; // Default: true
+            });
             const [showSuccessNotification, setShowSuccessNotification] = useState(false);
             const [notificationMessage, setNotificationMessage] = useState('');
             const [showManualAddModal, setShowManualAddModal] = useState(false);
@@ -257,8 +277,10 @@
                 feeding: false,
                 poop: false,
                 pee: false,
+                note: false,
                 date: '',
-                time: ''
+                time: '',
+                noteText: ''
             });
             const [lastFeedingTime, setLastFeedingTime] = useState(null);
             const [currentTime, setCurrentTime] = useState(new Date());
@@ -403,12 +425,31 @@
 
             const checkVitaminD = () => {
                 const hasVitaminD = entries.some(entry => entry.type === 'vitamin_d');
-                setShowVitaminDPrompt(isToday(selectedDate) && !hasVitaminD);
+                setShowVitaminDPrompt(showVitaminDReminder && isToday(selectedDate) && !hasVitaminD);
             };
 
             const checkProbiotic = () => {
                 const hasProbiotic = entries.some(entry => entry.type === 'probiotic');
-                setShowProbioticPrompt(isToday(selectedDate) && !hasProbiotic);
+                setShowProbioticPrompt(showProbioticReminder && isToday(selectedDate) && !hasProbiotic);
+            };
+
+            const toggleVitaminDReminder = (value) => {
+                setShowVitaminDReminder(value);
+                localStorage.setItem('babyMonitor_vitaminDReminder', value.toString());
+            };
+
+            const toggleProbioticReminder = (value) => {
+                setShowProbioticReminder(value);
+                localStorage.setItem('babyMonitor_probioticReminder', value.toString());
+            };
+            const toggleVitaminDReminder = (value) => {
+                setShowVitaminDReminder(value);
+                localStorage.setItem('babyMonitor_vitaminDReminder', value.toString());
+            };
+
+            const toggleProbioticReminder = (value) => {
+                setShowProbioticReminder(value);
+                localStorage.setItem('babyMonitor_probioticReminder', value.toString());
             };
 
             const showNotification = (message) => {
@@ -664,10 +705,15 @@
             };
 
             const saveManualEntry = async () => {
-                const { feeding, poop, pee, date, time } = manualAddData;
+                const { feeding, poop, pee, note, date, time, noteText } = manualAddData;
                 
-                if (!feeding && !poop && !pee) {
+                if (!feeding && !poop && !pee && !note) {
                     alert('Wybierz przynajmniej jedną opcję');
+                    return;
+                }
+                
+                if (note && !noteText?.trim()) {
+                    alert('Wpisz treść notatki!');
                     return;
                 }
 
@@ -691,6 +737,10 @@
                         entries.push({ type: 'pee', timestamp: timestamp.toISOString(), note: null });
                     }
                 }
+                
+                if (note) {
+                    entries.push({ type: 'note', timestamp: timestamp.toISOString(), note: noteText.trim() });
+                }
 
                 const { error } = await supabase
                     .from('entries')
@@ -701,6 +751,7 @@
                     alert('Błąd zapisu.');
                 } else {
                     setShowManualAddModal(false);
+                    setManualAddData({ feeding: false, poop: false, pee: false, note: false, date: '', time: '', noteText: '' });
                     fetchEntries();
                     showNotification('Dodano!');
                 }
@@ -839,6 +890,7 @@
                     case 'both': return '💩💧 Kupka + Siku';
                     case 'vitamin_d': return '💊 Witamina D';
                     case 'probiotic': return '🦠 Probiotyk';
+                    case 'note': return '📝 Notatka';
                     default: return type;
                 }
             };
@@ -1094,22 +1146,24 @@
                             </button>
                         </div>
                         
-                        {/* Tabs - Panel, Historia, and Podsumowanie */}
+                        {/* Tabs - Panel, Historia, Podsumowanie, Settings */}
                         <div style={{
                             background: colors.card,
                             borderRadius: '16px',
                             padding: '8px',
-                            boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                            boxShadow: theme === 'dark' ? '0 2px 12px rgba(0,0,0,0.3)' : '0 2px 12px rgba(0,0,0,0.08)',
                             display: 'flex',
-                            gap: '8px'
+                            gap: '8px',
+                            flexWrap: 'wrap'
                         }}>
                             <button
                                 onClick={() => setCurrentView('dashboard')}
                                 style={{
                                     flex: 1,
+                                    minWidth: '80px',
                                     padding: '12px',
-                                    background: currentView === 'dashboard' ? '#000' : 'transparent',
-                                    color: currentView === 'dashboard' ? 'white' : '#666',
+                                    background: currentView === 'dashboard' ? colors.button : 'transparent',
+                                    color: currentView === 'dashboard' ? colors.buttonText : colors.textSecondary,
                                     border: 'none',
                                     borderRadius: '10px',
                                     cursor: 'pointer',
@@ -1126,9 +1180,10 @@
                                 onClick={() => setCurrentView('history')}
                                 style={{
                                     flex: 1,
+                                    minWidth: '80px',
                                     padding: '12px',
-                                    background: currentView === 'history' ? '#000' : 'transparent',
-                                    color: currentView === 'history' ? 'white' : '#666',
+                                    background: currentView === 'history' ? colors.button : 'transparent',
+                                    color: currentView === 'history' ? colors.buttonText : colors.textSecondary,
                                     border: 'none',
                                     borderRadius: '10px',
                                     cursor: 'pointer',
@@ -1145,9 +1200,10 @@
                                 onClick={() => setCurrentView('summary')}
                                 style={{
                                     flex: 1,
+                                    minWidth: '80px',
                                     padding: '12px',
-                                    background: currentView === 'summary' ? '#000' : 'transparent',
-                                    color: currentView === 'summary' ? 'white' : '#666',
+                                    background: currentView === 'summary' ? colors.button : 'transparent',
+                                    color: currentView === 'summary' ? colors.buttonText : colors.textSecondary,
                                     border: 'none',
                                     borderRadius: '10px',
                                     cursor: 'pointer',
@@ -1158,6 +1214,26 @@
                                 }}
                             >
                                 Podsumowanie
+                            </button>
+                            
+                            <button
+                                onClick={() => setCurrentView('settings')}
+                                style={{
+                                    flex: 1,
+                                    minWidth: '80px',
+                                    padding: '12px',
+                                    background: currentView === 'settings' ? colors.button : 'transparent',
+                                    color: currentView === 'settings' ? colors.buttonText : colors.textSecondary,
+                                    border: 'none',
+                                    borderRadius: '10px',
+                                    cursor: 'pointer',
+                                    fontFamily: 'inherit',
+                                    fontSize: '16px',
+                                    fontWeight: '600',
+                                    transition: 'all 0.3s'
+                                }}
+                            >
+                                ⚙️ Ustawienia
                             </button>
                         </div>
                     </div>
@@ -1929,6 +2005,93 @@
                                 )}
                             </div>
                             
+                            {/* Notatki */}
+                            <div style={{
+                                background: colors.card,
+                                borderRadius: '20px',
+                                padding: '24px',
+                                marginBottom: '24px',
+                                boxShadow: theme === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.1)'
+                            }}>
+                                <h2 style={{
+                                    margin: '0 0 20px 0',
+                                    color: colors.text,
+                                    fontSize: '24px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px'
+                                }}>
+                                    <span style={{ fontSize: '32px' }}>📝</span>
+                                    Notatki
+                                </h2>
+                                
+                                {entries.filter(e => e.type === 'note').length === 0 ? (
+                                    <p style={{ color: colors.textSecondary, fontStyle: 'italic' }}>
+                                        Brak notatek
+                                    </p>
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                        {entries.filter(e => e.type === 'note').map(entry => (
+                                            <div
+                                                key={entry.id}
+                                                style={{
+                                                    background: colors.hover,
+                                                    padding: '16px',
+                                                    borderRadius: '12px',
+                                                    borderLeft: '4px solid #FFA726',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: '8px'
+                                                }}
+                                            >
+                                                <div style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'flex-start',
+                                                    gap: '12px',
+                                                    flexWrap: 'wrap'
+                                                }}>
+                                                    <div style={{ flex: 1 }}>
+                                                        <div style={{ 
+                                                            fontSize: '14px', 
+                                                            color: colors.textSecondary,
+                                                            marginBottom: '8px'
+                                                        }}>
+                                                            {formatDateTime(entry.timestamp)}
+                                                        </div>
+                                                        <div style={{ 
+                                                            color: colors.text,
+                                                            lineHeight: '1.6',
+                                                            whiteSpace: 'pre-wrap',
+                                                            fontSize: '15px'
+                                                        }}>
+                                                            {entry.note}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <button
+                                                        onClick={() => setShowDeleteConfirm(entry.id)}
+                                                        style={{
+                                                            background: '#D21632',
+                                                            color: '#ffffff',
+                                                            border: 'none',
+                                                            borderRadius: '8px',
+                                                            padding: '8px 16px',
+                                                            cursor: 'pointer',
+                                                            fontSize: '14px',
+                                                            fontFamily: 'inherit',
+                                                            minWidth: '60px'
+                                                        }}
+                                                    >
+                                                        Usuń
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            
                         </div>
                     )}
 
@@ -2113,6 +2276,205 @@
                         </div>
                     )}
 
+                    {/* Settings View */}
+                    {currentView === 'settings' && (
+                        <div style={{
+                            maxWidth: '600px',
+                            margin: '0 auto'
+                        }}>
+                            <div style={{
+                                background: colors.card,
+                                borderRadius: '20px',
+                                padding: '32px',
+                                boxShadow: theme === 'dark' ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.1)'
+                            }}>
+                                <h2 style={{
+                                    margin: '0 0 24px 0',
+                                    color: colors.text,
+                                    fontSize: '28px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px'
+                                }}>
+                                    <span>⚙️</span>
+                                    Ustawienia
+                                </h2>
+                                
+                                <div style={{ marginBottom: '32px' }}>
+                                    <h3 style={{
+                                        margin: '0 0 16px 0',
+                                        color: colors.text,
+                                        fontSize: '20px',
+                                        fontWeight: '600'
+                                    }}>
+                                        Powiadomienia
+                                    </h3>
+                                    
+                                    {/* Vitamin D Toggle */}
+                                    <div style={{
+                                        background: colors.hover,
+                                        borderRadius: '12px',
+                                        padding: '20px',
+                                        marginBottom: '16px'
+                                    }}>
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            flexWrap: 'wrap',
+                                            gap: '16px'
+                                        }}>
+                                            <div style={{ flex: 1, minWidth: '200px' }}>
+                                                <div style={{
+                                                    fontSize: '18px',
+                                                    fontWeight: '600',
+                                                    color: colors.text,
+                                                    marginBottom: '4px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '8px'
+                                                }}>
+                                                    <span>💊</span> Witamina D
+                                                </div>
+                                                <div style={{
+                                                    fontSize: '14px',
+                                                    color: colors.textSecondary
+                                                }}>
+                                                    Przypominaj o podaniu witaminy D
+                                                </div>
+                                            </div>
+                                            
+                                            <label style={{
+                                                position: 'relative',
+                                                display: 'inline-block',
+                                                width: '60px',
+                                                height: '34px',
+                                                cursor: 'pointer'
+                                            }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={showVitaminDReminder}
+                                                    onChange={(e) => toggleVitaminDReminder(e.target.checked)}
+                                                    style={{ display: 'none' }}
+                                                />
+                                                <span style={{
+                                                    position: 'absolute',
+                                                    cursor: 'pointer',
+                                                    top: 0,
+                                                    left: 0,
+                                                    right: 0,
+                                                    bottom: 0,
+                                                    backgroundColor: showVitaminDReminder ? '#4CAF50' : colors.border,
+                                                    transition: '0.3s',
+                                                    borderRadius: '34px'
+                                                }}>
+                                                    <span style={{
+                                                        position: 'absolute',
+                                                        height: '26px',
+                                                        width: '26px',
+                                                        left: showVitaminDReminder ? '30px' : '4px',
+                                                        bottom: '4px',
+                                                        backgroundColor: 'white',
+                                                        transition: '0.3s',
+                                                        borderRadius: '50%'
+                                                    }}></span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Probiotic Toggle */}
+                                    <div style={{
+                                        background: colors.hover,
+                                        borderRadius: '12px',
+                                        padding: '20px'
+                                    }}>
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            flexWrap: 'wrap',
+                                            gap: '16px'
+                                        }}>
+                                            <div style={{ flex: 1, minWidth: '200px' }}>
+                                                <div style={{
+                                                    fontSize: '18px',
+                                                    fontWeight: '600',
+                                                    color: colors.text,
+                                                    marginBottom: '4px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '8px'
+                                                }}>
+                                                    <span>🦠</span> Probiotyk
+                                                </div>
+                                                <div style={{
+                                                    fontSize: '14px',
+                                                    color: colors.textSecondary
+                                                }}>
+                                                    Przypominaj o podaniu probiotyku
+                                                </div>
+                                            </div>
+                                            
+                                            <label style={{
+                                                position: 'relative',
+                                                display: 'inline-block',
+                                                width: '60px',
+                                                height: '34px',
+                                                cursor: 'pointer'
+                                            }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={showProbioticReminder}
+                                                    onChange={(e) => toggleProbioticReminder(e.target.checked)}
+                                                    style={{ display: 'none' }}
+                                                />
+                                                <span style={{
+                                                    position: 'absolute',
+                                                    cursor: 'pointer',
+                                                    top: 0,
+                                                    left: 0,
+                                                    right: 0,
+                                                    bottom: 0,
+                                                    backgroundColor: showProbioticReminder ? '#4CAF50' : colors.border,
+                                                    transition: '0.3s',
+                                                    borderRadius: '34px'
+                                                }}>
+                                                    <span style={{
+                                                        position: 'absolute',
+                                                        height: '26px',
+                                                        width: '26px',
+                                                        left: showProbioticReminder ? '30px' : '4px',
+                                                        bottom: '4px',
+                                                        backgroundColor: 'white',
+                                                        transition: '0.3s',
+                                                        borderRadius: '50%'
+                                                    }}></span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Info Box */}
+                                <div style={{
+                                    padding: '16px',
+                                    background: theme === 'dark' ? 'rgba(76, 175, 80, 0.1)' : '#e8f5e9',
+                                    borderRadius: '12px',
+                                    borderLeft: '4px solid #4CAF50'
+                                }}>
+                                    <div style={{
+                                        fontSize: '14px',
+                                        color: colors.text,
+                                        lineHeight: '1.6'
+                                    }}>
+                                        💡 <strong>Info:</strong> Powiadomienia pokazują się tylko raz dziennie, gdy nie zaznaczono jeszcze podania witaminy D lub probiotyku.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Manual Add Modal */}
                     {showManualAddModal && (
                         <div style={{
@@ -2200,6 +2562,26 @@
                                         <span style={{ fontSize: '24px' }}>💧</span>
                                         <span style={{ fontSize: '18px', fontWeight: '600' }}>Siku</span>
                                     </label>
+                                    
+                                    <label style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px',
+                                        padding: '16px',
+                                        background: colors.hover,
+                                        borderRadius: '12px',
+                                        cursor: 'pointer',
+                                        marginTop: '12px'
+                                    }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={manualAddData.note}
+                                            onChange={(e) => setManualAddData({...manualAddData, note: e.target.checked})}
+                                            style={{ width: '24px', height: '24px', cursor: 'pointer' }}
+                                        />
+                                        <span style={{ fontSize: '24px' }}>📝</span>
+                                        <span style={{ fontSize: '18px', fontWeight: '600', color: colors.text }}>Notatka</span>
+                                    </label>
                                 </div>
                                 
                                 {/* Date and time */}
@@ -2253,6 +2635,33 @@
                                         />
                                     </div>
                                 </div>
+                                
+                                {/* Note textarea - pokazuje się tylko gdy zaznaczone */}
+                                {manualAddData.note && (
+                                    <div style={{ marginBottom: '24px' }}>
+                                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: colors.textSecondary }}>
+                                            Treść notatki
+                                        </label>
+                                        <textarea
+                                            value={manualAddData.noteText || ''}
+                                            onChange={(e) => setManualAddData({...manualAddData, noteText: e.target.value})}
+                                            placeholder="Wpisz swoją notatkę..."
+                                            style={{
+                                                width: '100%',
+                                                minHeight: '100px',
+                                                padding: '12px',
+                                                borderRadius: '12px',
+                                                border: `2px solid ${colors.border}`,
+                                                fontSize: '16px',
+                                                fontFamily: 'inherit',
+                                                boxSizing: 'border-box',
+                                                background: colors.card,
+                                                color: colors.text,
+                                                resize: 'vertical'
+                                            }}
+                                        />
+                                    </div>
+                                )}
                                 
                                 {/* Buttons */}
                                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
