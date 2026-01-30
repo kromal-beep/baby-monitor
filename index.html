@@ -258,7 +258,6 @@
                 const saved = localStorage.getItem('babyMonitor_probioticReminder');
                 return saved !== null ? saved === 'true' : true;
             });
-            
             const [showSuccessNotification, setShowSuccessNotification] = useState(false);
             const [notificationMessage, setNotificationMessage] = useState('');
             const [showManualAddModal, setShowManualAddModal] = useState(false);
